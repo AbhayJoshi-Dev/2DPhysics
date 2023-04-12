@@ -4,6 +4,7 @@
 #include<SDL.h>
 
 #include"Timer.h"
+#include"Body.h"
 
 class Core
 {

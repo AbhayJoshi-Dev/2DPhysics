@@ -1,7 +1,10 @@
 #include"Core.h"
 
-Core::Core()
-	:m_quit(false), m_window(NULL), m_renderer(NULL), m_counted_frames(0)
+Core::Core():
+	m_quit(false),
+	m_window(NULL),
+	m_renderer(NULL),
+	m_counted_frames(0),
 {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
