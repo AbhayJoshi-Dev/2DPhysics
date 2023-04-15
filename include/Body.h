@@ -22,7 +22,7 @@ class Body
 {
 public:
 
-	Body(Shape *shape, Vector2 position);
+	Body(const Shape &shape, Vector2 position);
 
 private:
 

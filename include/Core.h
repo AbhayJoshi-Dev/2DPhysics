@@ -4,7 +4,7 @@
 #include<SDL.h>
 
 #include"Timer.h"
-#include"Body.h"
+#include"Scene.h"
 
 class Core
 {
@@ -35,4 +35,6 @@ private:
 	Timer m_cap_timer;
 
 	int m_counted_frames;
+
+	Scene scene;
 };
