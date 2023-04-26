@@ -13,7 +13,6 @@ public:
 	~Core();
 
 	void Loop();
-	void Update();
 	void Render();
 
 private:
@@ -36,5 +35,5 @@ private:
 
 	int m_counted_frames;
 
-	Scene scene;
+	Scene *m_scene;
 };

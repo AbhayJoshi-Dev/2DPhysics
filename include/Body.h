@@ -14,7 +14,7 @@ struct MassData
 
 struct Material
 {
-	float m_density;
+	float m_density = 1.f;
 	float m_restitution;
 };
 
@@ -23,6 +23,13 @@ class Body
 public:
 
 	Body(const Shape &shape, Vector2 position);
+	void AddForce(const Vector2& force);
+	void IntegrateForces(const float dt);
+	void IntegrateVelocities(const float dt);
+	Vector2& GetPosition();
+
+public:
+	MassData m_mass_data;
 
 private:
 
@@ -30,7 +37,6 @@ private:
 	Vector2 m_position;
 	float m_orientation;
 	Material m_material;
-	MassData m_mass_data;
 	Vector2 m_velocity;
 	Vector2 m_force;
 	//float m_gravity_scale;

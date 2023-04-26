@@ -1,5 +1,7 @@
 #pragma once
 
+class Body;
+
 enum ShapeType
 {
 	CIRCLE,
@@ -13,6 +15,11 @@ public:
 	virtual ~Shape() = default;
 	virtual Shape* Clone() const = 0;
 	virtual ShapeType GetType() const = 0;
+	virtual void ComputeMass(float density) = 0;
+
+public:
+
+	Body* m_body;
 };
 
 class Circle : public Shape
@@ -23,6 +30,7 @@ public:
 	virtual ~Circle();
 	Shape* Clone() const override;
 	ShapeType GetType() const override;
+	void ComputeMass(float density) override;
 
 public:
 

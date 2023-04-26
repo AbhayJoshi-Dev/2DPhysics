@@ -1,5 +1,7 @@
 #pragma once
 
+#include<vector>
+
 #include"Body.h"
 
 class Scene
@@ -7,8 +9,10 @@ class Scene
 public:
 
 	Scene();
-	void Update();
+	void Update(const float dt);
+	void AddBody(Body* body);
+	std::vector<Body*>& GetBodies();
 
 private:
-	Body m_body;
+	std::vector<Body*> m_bodies;
 };
