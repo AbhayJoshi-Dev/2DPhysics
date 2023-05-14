@@ -1,14 +1,12 @@
+#include<cmath>
+#include<iostream>
+
 #include"Shape.h"
 #include"Body.h"
 
 Circle::Circle(const float radius):
 	m_radius(radius)
 {}
-
-Circle::~Circle()
-{
-
-}
 
 Shape* Circle::Clone() const
 {
@@ -26,3 +24,23 @@ void Circle::ComputeMass(float density)
 	m_body->m_mass_data.inverse_mass = (m_body->m_mass_data.mass) ? 1.f / m_body->m_mass_data.mass : 0.f;
 }
 
+AABB::AABB(float width, float height):
+	m_width(width),
+	m_height(height)
+{}
+
+Shape* AABB::Clone() const
+{
+	return new AABB(m_width, m_height);
+}
+
+ShapeType AABB::GetType() const
+{
+	return AABB_;
+}
+
+void AABB::ComputeMass(float density)
+{
+	m_body->m_mass_data.mass = (m_width * m_height) * density;
+	m_body->m_mass_data.inverse_mass = (m_body->m_mass_data.mass) ? 1.f / m_body->m_mass_data.mass : 0.f;
+}

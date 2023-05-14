@@ -23,6 +23,9 @@ Core::Core():
 
 	Body* b = new Body(Circle(10), Vector2(10, 20));
 	m_scene->AddBody(b);
+
+	Body* b1 = new Body(AABB(50, 50), { 80, 90 });
+	m_scene->AddBody(b1);
 }
 
 Core::~Core()
@@ -49,7 +52,10 @@ void Core::Loop()
 
 			if (m_event.type == SDL_MOUSEBUTTONDOWN)
 			{
-				Body* b = new Body(Circle(10), Vector2(10, 20));
+				int mouse_x, mouse_y;
+				SDL_GetMouseState(&mouse_x, &mouse_y);
+
+				Body* b = new Body(Circle(10), Vector2(mouse_x, mouse_y));
 				m_scene->AddBody(b);
 			}
 		}
@@ -130,13 +136,29 @@ void Draw_Circle(SDL_Renderer* renderer, int p_x, int p_y, int radius, Uint8 r, 
 void Core::Render()
 {
 	SDL_RenderClear(m_renderer);
-	SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
 
 	for (auto body : m_scene->GetBodies())
 	{
-		Draw_Circle(m_renderer, body->GetPosition().x, body->GetPosition().y, 10, 255, 255, 255, 255);
+		if (body->m_shape->GetType() == CIRCLE)
+		{
+			Circle* circle = (Circle*)body->m_shape;
+			Draw_Circle(m_renderer, body->GetPosition().x, body->GetPosition().y, circle->m_radius, 255, 255, 255, 255);
+
+		}
+		else if (body->m_shape->GetType() == AABB_)
+		{
+			AABB* aabb = (AABB*)body->m_shape;
+
+			float w = aabb->m_width;
+			float h = aabb->m_height;
+
+			SDL_Rect rect = { body->GetPosition().x , body->GetPosition().y , w, h};
+
+			SDL_RenderDrawRect(m_renderer, &rect);
+		}
 	}
 
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
+
 	SDL_RenderPresent(m_renderer);
 }

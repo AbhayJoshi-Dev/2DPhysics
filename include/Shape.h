@@ -1,11 +1,14 @@
 #pragma once
 
+#include"Vector2.h"
+
 class Body;
 
 enum ShapeType
 {
 	CIRCLE,
-	POLYGON
+	POLYGON,
+	AABB_
 };
 
 class Shape
@@ -27,7 +30,6 @@ class Circle : public Shape
 public:
 
 	Circle(const float radius);
-	virtual ~Circle();
 	Shape* Clone() const override;
 	ShapeType GetType() const override;
 	void ComputeMass(float density) override;
@@ -40,4 +42,23 @@ public:
 class Polygon : public Shape
 {
 	Polygon();
+};
+
+class AABB : public Shape
+{
+public:
+
+	AABB(float width, float height);
+	Shape* Clone() const override;
+	ShapeType GetType() const override;
+	void ComputeMass(float density) override;
+
+public:
+	float m_width;
+	float m_height;
+
+private:
+
+	Vector2 m_min;
+	Vector2 m_max;
 };
