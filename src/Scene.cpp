@@ -1,8 +1,15 @@
 #include"Scene.h"
 
+#include<iostream>
+
 Scene::Scene()
 {
 
+}
+
+void Print(int a)
+{
+	std::cout << a << std::endl;
 }
 
 void Scene::Update(const float dt)
