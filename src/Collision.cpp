@@ -3,6 +3,8 @@
 #include"Body.h"
 #include"Manifold.h"
 
+#include<iostream>
+
 void Collision::CircleToCircle(Manifold* m, Body* a, Body* b)
 {
 	Circle* A = (Circle*)a->m_shape;

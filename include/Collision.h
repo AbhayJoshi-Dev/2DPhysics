@@ -7,5 +7,5 @@ class Collision
 {
 public:
 
-	void CircleToCircle(Manifold* m, Body* a, Body* b);
+	static void CircleToCircle(Manifold* m, Body* a, Body* b);
 };

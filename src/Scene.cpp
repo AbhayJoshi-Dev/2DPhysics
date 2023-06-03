@@ -1,4 +1,5 @@
 #include"Scene.h"
+#include"Manifold.h"
 
 #include<iostream>
 
@@ -14,6 +15,21 @@ void Print(int a)
 
 void Scene::Update(const float dt)
 {
+
+	for (int i = 0; i < m_bodies.size(); i++)
+	{
+		Body *A = m_bodies[i];
+
+		for (int j = i + 1; j < m_bodies.size(); j++)
+		{
+			Body* B = m_bodies[j];
+
+			Manifold manifold(A, B);
+			manifold.Solve();
+		}
+	}
+
+
 	for (auto& body : m_bodies)
 	{
 		body->AddForce({0, 10000.f});//gravity
