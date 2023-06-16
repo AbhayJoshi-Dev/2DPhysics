@@ -1,4 +1,5 @@
 #include"Core.h"
+#include"Debug_Draw.h"
 
 Core::Core():
 	m_quit(false),
@@ -157,6 +158,8 @@ void Core::Render()
 			SDL_RenderDrawRect(m_renderer, &rect);
 		}
 	}
+
+	Debug_Draw::GetInstance().Draw(m_renderer);
 
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
 

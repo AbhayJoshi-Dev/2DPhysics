@@ -3,6 +3,7 @@
 #include<vector>
 
 #include"Body.h"
+#include"Manifold.h"
 
 class Scene
 {
@@ -15,4 +16,5 @@ public:
 
 private:
 	std::vector<Body*> m_bodies;
+	std::vector<Manifold> m_contacts;
 };

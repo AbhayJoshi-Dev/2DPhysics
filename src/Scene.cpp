@@ -26,17 +26,23 @@ void Scene::Update(const float dt)
 
 			Manifold manifold(A, B);
 			manifold.Solve();
+			if (manifold.m_is_contact)
+				m_contacts.emplace_back(manifold);
 		}
 	}
 
 
-	for (auto& body : m_bodies)
+	for (int i = 0; i < m_bodies.size(); i++)
 	{
-		body->AddForce({0, 10000.f});//gravity
-
-		body->IntegrateForces(dt);
-		body->IntegrateVelocities(dt);
+		m_bodies[i]->AddForce({0, 10000.f});//gravity
+		m_bodies[i]->IntegrateForces(dt);
 	}
+
+	for (int i = 0; i < m_contacts.size(); i++)
+		m_contacts[i].ResolveCollision();
+
+	for (int i = 0; i < m_bodies.size(); i++)
+		m_bodies[i]->IntegrateVelocities(dt);
 }
 
 void Scene::AddBody(Body* body)

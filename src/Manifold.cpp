@@ -11,5 +11,10 @@ Manifold::Manifold(Body* A, Body* B):
 void Manifold::Solve()
 {
 	if(_A->m_shape->GetType() == CIRCLE && _B->m_shape->GetType() == CIRCLE)
-	Collision::CircleToCircle(this, _A, _B);
+		Collision::CircleToCircle(this, _A, _B);
+}
+
+void Manifold::ResolveCollision()
+{
+
 }
