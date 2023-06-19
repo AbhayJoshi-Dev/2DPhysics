@@ -31,13 +31,13 @@ public:
 public:
 	MassData m_mass_data;
 	Shape *m_shape;
+	Vector2 m_velocity;
 
 private:
 
 	Vector2 m_position;
 	float m_orientation;
 	Material m_material;
-	Vector2 m_velocity;
 	Vector2 m_force;
 	//float m_gravity_scale;
 };

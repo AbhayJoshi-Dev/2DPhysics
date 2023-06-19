@@ -34,7 +34,7 @@ void Scene::Update(const float dt)
 
 	for (int i = 0; i < m_bodies.size(); i++)
 	{
-		m_bodies[i]->AddForce({0, 10000.f});//gravity
+		m_bodies[i]->AddForce({0, 5000.f});//gravity
 		m_bodies[i]->IntegrateForces(dt);
 	}
 
