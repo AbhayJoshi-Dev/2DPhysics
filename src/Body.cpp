@@ -25,8 +25,3 @@ void Body::IntegrateVelocities(const float dt)
 {
 	m_position += m_velocity * dt;
 }
-
-Vector2& Body::GetPosition()
-{
-	return m_position;
-}

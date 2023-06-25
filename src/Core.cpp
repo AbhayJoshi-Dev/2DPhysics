@@ -25,7 +25,7 @@ Core::Core():
 	Body* b = new Body(Circle(10), Vector2(10, 20));
 	m_scene->AddBody(b);
 
-	Body* b1 = new Body(AABB(50, 50), { 80, 90 });
+	Body* b1 = new Body(AABB(25, 25), { 80, 90 });
 	m_scene->AddBody(b1);
 }
 
@@ -53,11 +53,22 @@ void Core::Loop()
 
 			if (m_event.type == SDL_MOUSEBUTTONDOWN)
 			{
-				int mouse_x, mouse_y;
-				SDL_GetMouseState(&mouse_x, &mouse_y);
+				if (m_event.button.button == SDL_BUTTON_LEFT)
+				{
+					int mouse_x, mouse_y;
+					SDL_GetMouseState(&mouse_x, &mouse_y);
 
-				Body* b = new Body(Circle(10), Vector2(mouse_x, mouse_y));
-				m_scene->AddBody(b);
+					Body* b = new Body(Circle(10), Vector2(mouse_x, mouse_y));
+					m_scene->AddBody(b);
+				}
+				else if (m_event.button.button == SDL_BUTTON_RIGHT)
+				{
+					int mouse_x, mouse_y;
+					SDL_GetMouseState(&mouse_x, &mouse_y);
+
+					Body* b1 = new Body(AABB(25, 25), Vector2(mouse_x, mouse_y));
+					m_scene->AddBody(b1);
+				}
 			}
 		}
 
@@ -73,8 +84,6 @@ void Core::Loop()
 			std::cout << m_counted_frames << std::endl;
 			m_counted_frames = 0;
 		}
-
-
 
 		int frames_ticks = m_cap_timer.GetTicks();
 		if (frames_ticks < SCREEN_TICKS_PER_FRAME)
@@ -143,7 +152,7 @@ void Core::Render()
 		if (body->m_shape->GetType() == CIRCLE)
 		{
 			Circle* circle = (Circle*)body->m_shape;
-			Draw_Circle(m_renderer, body->GetPosition().x, body->GetPosition().y, circle->m_radius, 255, 255, 255, 255);
+			Draw_Circle(m_renderer, body->m_position.x, body->m_position.y, circle->m_radius, 255, 255, 255, 255);
 
 		}
 		else if (body->m_shape->GetType() == AABB_)
@@ -153,7 +162,7 @@ void Core::Render()
 			float w = aabb->m_width;
 			float h = aabb->m_height;
 
-			SDL_Rect rect = { body->GetPosition().x , body->GetPosition().y , w, h};
+			SDL_Rect rect = { body->m_position.x - w / 2, body->m_position.y - h / 2 , w, h};
 
 			SDL_RenderDrawRect(m_renderer, &rect);
 		}

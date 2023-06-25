@@ -9,6 +9,7 @@ public:
 	Manifold(Body* A,Body* B);
 	void Solve();
 	void ResolveCollision();
+	void PositionalCorrection();
 
 public:
 	

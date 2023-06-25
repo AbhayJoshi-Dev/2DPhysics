@@ -8,11 +8,6 @@ Scene::Scene()
 
 }
 
-void Print(int a)
-{
-	std::cout << a << std::endl;
-}
-
 void Scene::Update(const float dt)
 {
 
@@ -31,18 +26,26 @@ void Scene::Update(const float dt)
 		}
 	}
 
-
 	for (int i = 0; i < m_bodies.size(); i++)
 	{
-		m_bodies[i]->AddForce({0, 5000.f});//gravity
+		//gravity
+		m_bodies[i]->AddForce({0, 5000.f});
+
+		// Integrate forces
 		m_bodies[i]->IntegrateForces(dt);
 	}
 
+	//Resolve Collisions
 	for (int i = 0; i < m_contacts.size(); i++)
 		m_contacts[i].ResolveCollision();
 
+	//Integrate Velocities
 	for (int i = 0; i < m_bodies.size(); i++)
 		m_bodies[i]->IntegrateVelocities(dt);
+
+	// Avoid object sinking by correcting positions
+	for (int i = 0; i < m_contacts.size(); i++)
+		m_contacts[i].PositionalCorrection();
 }
 
 void Scene::AddBody(Body* body)
