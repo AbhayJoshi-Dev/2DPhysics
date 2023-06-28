@@ -16,6 +16,14 @@ void Manifold::Solve()
 		Collision::CircleToCircle(this, _A, _B);
 	else if (_A->m_shape->GetType() == AABB_ && _B->m_shape->GetType() == AABB_)
 		Collision::AABBToAABB(this, _A, _B);
+
+	//AABBtoCircle
+	if (_A->m_shape->GetType() == AABB_ && _B->m_shape->GetType() == CIRCLE)
+		Collision::AABBToCircle(this, _A, _B);
+
+	//CircletoAABB
+	if (_A->m_shape->GetType() == CIRCLE && _B->m_shape->GetType() == AABB_)
+		Collision::CircleToAABB(this, _A, _B);
 }
 
 void Manifold::ResolveCollision()
@@ -39,8 +47,11 @@ void Manifold::ResolveCollision()
 
 	// apply impulse
 	Vector2 impulse = m_normal * j;
-	_A->m_velocity -= impulse / _A->m_mass_data.mass;
-	_B->m_velocity += impulse / _B->m_mass_data.mass;
+
+	if(!_A->m_is_static)
+		_A->m_velocity -= impulse / _A->m_mass_data.mass;
+	if(!_B->m_is_static)
+		_B->m_velocity += impulse / _B->m_mass_data.mass;
 }
 
 void Manifold::PositionalCorrection()

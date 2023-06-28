@@ -22,11 +22,8 @@ Core::Core():
 
 	m_scene = new Scene();
 
-	Body* b = new Body(Circle(10), Vector2(10, 20));
+	Body* b = new Body(AABB(700, 25), { 400, 500 }, true);
 	m_scene->AddBody(b);
-
-	Body* b1 = new Body(AABB(25, 25), { 80, 90 });
-	m_scene->AddBody(b1);
 }
 
 Core::~Core()
@@ -58,7 +55,7 @@ void Core::Loop()
 					int mouse_x, mouse_y;
 					SDL_GetMouseState(&mouse_x, &mouse_y);
 
-					Body* b = new Body(Circle(10), Vector2(mouse_x, mouse_y));
+					Body* b = new Body(Circle(10), Vector2(mouse_x, mouse_y), false);
 					m_scene->AddBody(b);
 				}
 				else if (m_event.button.button == SDL_BUTTON_RIGHT)
@@ -66,7 +63,7 @@ void Core::Loop()
 					int mouse_x, mouse_y;
 					SDL_GetMouseState(&mouse_x, &mouse_y);
 
-					Body* b1 = new Body(AABB(25, 25), Vector2(mouse_x, mouse_y));
+					Body* b1 = new Body(AABB(25, 25), Vector2(mouse_x, mouse_y), false);
 					m_scene->AddBody(b1);
 				}
 			}
@@ -164,6 +161,7 @@ void Core::Render()
 
 			SDL_Rect rect = { body->m_position.x - w / 2, body->m_position.y - h / 2 , w, h};
 
+			SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
 			SDL_RenderDrawRect(m_renderer, &rect);
 		}
 	}

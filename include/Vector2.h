@@ -48,6 +48,8 @@ public:
 
 	void operator-=(const Vector2& v);
 
+	bool operator==(const Vector2& v);
+
 public:
 
 	float x = 0.f;

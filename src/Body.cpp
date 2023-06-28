@@ -1,9 +1,10 @@
 #include"Body.h"
 
-Body::Body(const Shape &shape, Vector2 position):
+Body::Body(const Shape &shape, Vector2 position, bool is_static):
 	m_shape(shape.Clone()),
 	m_position(position),
-	m_velocity(0.f, 0.f)
+	m_velocity(0.f, 0.f),
+	m_is_static(is_static)
 {
 	m_shape->m_body = this;
 	m_shape->ComputeMass(m_material.m_density);
@@ -11,7 +12,8 @@ Body::Body(const Shape &shape, Vector2 position):
 
 void Body::AddForce(const Vector2& force)
 {
-	m_force += force;
+	if(!m_is_static)
+		m_force += force;
 }
 
 void Body::IntegrateForces(const float dt)

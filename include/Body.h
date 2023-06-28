@@ -22,7 +22,7 @@ class Body
 {
 public:
 
-	Body(const Shape &shape, Vector2 position);
+	Body(const Shape &shape, Vector2 position, bool is_static);
 	void AddForce(const Vector2& force);
 	void IntegrateForces(const float dt);
 	void IntegrateVelocities(const float dt);
@@ -32,6 +32,7 @@ public:
 	Shape *m_shape;
 	Vector2 m_velocity;
 	Vector2 m_position;
+	bool m_is_static;
 
 private:
 	float m_orientation;

@@ -91,3 +91,8 @@ void Vector2::operator-=(const Vector2& v)
 	x -= v.x;
 	y -= v.y;
 }
+
+bool Vector2::operator==(const Vector2& v)
+{
+	return (x == v.x && y == v.y);
+}
