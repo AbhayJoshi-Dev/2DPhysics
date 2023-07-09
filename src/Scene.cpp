@@ -11,6 +11,8 @@ Scene::Scene()
 void Scene::Update(const float dt)
 {
 
+	m_contacts.clear();
+
 	for (int i = 0; i < m_bodies.size(); i++)
 	{
 		Body *A = m_bodies[i];
@@ -26,18 +28,14 @@ void Scene::Update(const float dt)
 		}
 	}
 
+	// Integrate forces
 	for (int i = 0; i < m_bodies.size(); i++)
-	{
-		//gravity
-		m_bodies[i]->AddForce({0, 5000.f});
-
-		// Integrate forces
 		m_bodies[i]->IntegrateForces(dt);
-	}
 
 	//Resolve Collisions
-	for (int i = 0; i < m_contacts.size(); i++)
-		m_contacts[i].ResolveCollision();
+	for(int j = 0; j < 10; j++)
+		for (int i = 0; i < m_contacts.size(); i++)
+			m_contacts[i].ResolveCollision();
 
 	//Integrate Velocities
 	for (int i = 0; i < m_bodies.size(); i++)

@@ -32,7 +32,10 @@ void Debug_Draw::Draw(SDL_Renderer* renderer)
 	}
 
 	for (int j = 0; j < m_points.size(); j++)
+	{
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 		SDL_RenderDrawPoint(renderer, m_points[j].x, m_points[j].y);
+	}
 
 	m_lines.clear();
 	m_points.clear();

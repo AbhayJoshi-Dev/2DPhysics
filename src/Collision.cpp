@@ -120,11 +120,9 @@ void Collision::AABBToCircle(Manifold* m, Body* a, Body* b)
 	float radius = B->m_radius;
 
 	if (dist_sq > radius * radius)
-	{
 		return;
-	}
 
-	Debug_Draw::GetInstance().DrawSegment(b->m_position, a->m_position);
+	Debug_Draw::GetInstance().DrawPoint(a->m_position + closest);
 
 	float dist = std::sqrt(dist_sq);
 

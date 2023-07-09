@@ -60,6 +60,9 @@ void Manifold::PositionalCorrection()
 	const float slop = 0.05f;
 
 	Vector2 correction = m_normal * percent * (std::max(m_penetration - slop, 0.f) / (_A->m_mass_data.inverse_mass + _B->m_mass_data.inverse_mass));
-	_A->m_position -= correction * _A->m_mass_data.inverse_mass;
-	_B->m_position += correction * _B->m_mass_data.inverse_mass;
+
+	if (!_A->m_is_static)
+		_A->m_position -= correction * _A->m_mass_data.inverse_mass;
+	if (!_B->m_is_static)
+		_B->m_position += correction * _B->m_mass_data.inverse_mass;
 }

@@ -22,6 +22,9 @@ void Circle::ComputeMass(float density)
 {
 	m_body->m_mass_data.mass = 3.14f * m_radius * m_radius * density;
 	m_body->m_mass_data.inverse_mass = (m_body->m_mass_data.mass) ? 1.f / m_body->m_mass_data.mass : 0.f;
+
+	m_body->m_mass_data.inertia = m_body->m_mass_data.mass * m_radius * m_radius;
+	m_body->m_mass_data.inverse_inertia = (m_body->m_mass_data.inertia) ? 1.f / m_body->m_mass_data.inertia : 0.f;
 }
 
 AABB::AABB(float width, float height):

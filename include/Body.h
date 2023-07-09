@@ -34,8 +34,11 @@ public:
 	Vector2 m_position;
 	bool m_is_static;
 
-private:
 	float m_orientation;
+	float m_angular_velocity;
+
+private:
+	float m_torque;
 	Material m_material;
 	Vector2 m_force;
 	//float m_gravity_scale;
