@@ -50,6 +50,8 @@ public:
 
 	bool operator==(const Vector2& v);
 
+	Vector2& Normalize();
+
 public:
 
 	float x = 0.f;

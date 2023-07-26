@@ -96,3 +96,14 @@ bool Vector2::operator==(const Vector2& v)
 {
 	return (x == v.x && y == v.y);
 }
+
+Vector2& Vector2::Normalize()
+{
+	float mag = GetLength();
+	if (mag != 0)
+	{
+		x /= mag;
+		y /= mag;
+	}
+	return *this;
+}

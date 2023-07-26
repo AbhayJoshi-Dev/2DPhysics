@@ -31,7 +31,7 @@ void Collision::CircleToCircle(Manifold* m, Body* a, Body* b)
 		m->m_normal = normal / dist;
 		m->m_is_contact = 1;
 		m->m_contacts[0] = m->m_normal * A->m_radius + a->m_position;
-		Debug_Draw::GetInstance().DrawSegment(b->m_position, a->m_position);
+		//Debug_Draw::GetInstance().DrawSegment(b->m_position, a->m_position);
 	}
 }
 

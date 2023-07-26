@@ -1,5 +1,6 @@
 #include"Manifold.h"
 #include"Collision.h"
+#include"Debug_Draw.h"
 
 #include<iostream>
 
@@ -41,7 +42,7 @@ void Manifold::ResolveCollision()
 	// restitution
 	float e = 0.3f;
 
-	// j is the impulse 
+	// j is the impulse magnitude
 	float j = -(1 + e) * vel_n;
 	j /= m_normal.Dot(m_normal) * (1 / _A->m_mass_data.mass + 1 / _B->m_mass_data.mass); //not sure about m_normal.Dot(m_normal) multiplication
 
@@ -52,6 +53,46 @@ void Manifold::ResolveCollision()
 		_A->m_velocity -= impulse / _A->m_mass_data.mass;
 	if(!_B->m_is_static)
 		_B->m_velocity += impulse / _B->m_mass_data.mass;
+
+	//Friction Impulse
+
+	//Re-calculate relative velocity
+	rel_vel_ab = _B->m_velocity - _A->m_velocity;
+
+	//Calculate  tangent vector
+	Vector2 t = rel_vel_ab - (m_normal * rel_vel_ab.Dot(m_normal));
+	t.Normalize();
+
+	// draw tangent
+	Debug_Draw::GetInstance().DrawSegment(m_contacts[0], m_contacts[0] + t * 10.f);
+
+	//Solve jt to apply along friction vector
+	float jt = -rel_vel_ab.Dot(t);
+	jt /= (1 / _A->m_mass_data.mass + 1 / _B->m_mass_data.mass);
+
+
+	float mu = std::sqrt(0.2f * 0.2f + 0.2f * 0.2f);//static friction
+
+	//Coulomb's Law
+	// Clamp magnitude of friction and create impulse vector
+	Vector2 friction_impulse;
+	if (std::abs(jt) < j * mu)
+	{
+		friction_impulse = t * jt;
+	}
+	else
+	{
+		float dynamic_friction = std::sqrt(0.1f * 0.1f + 0.1f * 0.1f);
+
+		friction_impulse = t * -j * dynamic_friction;
+	}
+
+	//Apply Friction impulse
+	if (!_A->m_is_static)
+		_A->m_velocity -= friction_impulse / _A->m_mass_data.mass;
+	if (!_B->m_is_static)
+		_B->m_velocity += friction_impulse / _B->m_mass_data.mass;
+
 }
 
 void Manifold::PositionalCorrection()

@@ -139,7 +139,6 @@ void Draw_Circle(SDL_Renderer* renderer, int p_x, int p_y, int radius, Uint8 r, 
 	}
 }
 
-
 void Core::Render()
 {
 	SDL_RenderClear(m_renderer);
@@ -150,6 +149,22 @@ void Core::Render()
 		{
 			Circle* circle = (Circle*)body->m_shape;
 			Draw_Circle(m_renderer, body->m_position.x, body->m_position.y, circle->m_radius, 255, 255, 255, 255);
+
+
+			Vector2 r1(1.f, 0.f);
+			float c = std::cos(body->m_orientation);
+			float s = std::sin(body->m_orientation);
+
+			Vector2 r;
+
+			r.x = r1.x * c - r1.y * s;
+			r.y = r1.x * s + r1.y * c;
+
+
+			r = r * circle->m_radius;
+			r = r + body->m_position;
+		//	Debug_Draw::GetInstance().DrawSegment(body->m_position, r);
+
 
 		}
 		else if (body->m_shape->GetType() == AABB_)
