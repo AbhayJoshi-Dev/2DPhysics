@@ -55,7 +55,7 @@ void Core::Loop()
 					int mouse_x, mouse_y;
 					SDL_GetMouseState(&mouse_x, &mouse_y);
 
-					Body* b = new Body(Circle(10), Vector2(mouse_x, mouse_y), false);
+					Body* b = new Body(Circle(20), Vector2(mouse_x, mouse_y), false);
 					m_scene->AddBody(b);
 				}
 				else if (m_event.button.button == SDL_BUTTON_RIGHT)
@@ -148,7 +148,8 @@ void Core::Render()
 		if (body->m_shape->GetType() == CIRCLE)
 		{
 			Circle* circle = (Circle*)body->m_shape;
-			Draw_Circle(m_renderer, body->m_position.x, body->m_position.y, circle->m_radius, 255, 255, 255, 255);
+			float rad = circle->m_radius;
+			Draw_Circle(m_renderer, body->m_position.x, body->m_position.y, rad, 255, 255, 255, 255);
 
 
 			Vector2 r1(1.f, 0.f);
@@ -157,13 +158,17 @@ void Core::Render()
 
 			Vector2 r;
 
-			r.x = r1.x * c - r1.y * s;
-			r.y = r1.x * s + r1.y * c;
+			r.x = r1.x * c - r1.y * s;   //v1.x * v2.x - v1.y * v2.y
+			r.y = r1.x * s + r1.y * c;   //v1.x * v2.y + v1.y * v2.x
+
+			r = r * rad;
+
+			//float x = rad * std::cos(body->m_orientation);
+			//float y = rad * std::sin(body->m_orientation);
 
 
-			r = r * circle->m_radius;
 			r = r + body->m_position;
-		//	Debug_Draw::GetInstance().DrawSegment(body->m_position, r);
+			Debug_Draw::GetInstance().DrawSegment(body->m_position, r);
 
 
 		}

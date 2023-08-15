@@ -11,9 +11,9 @@ void Collision::CircleToCircle(Manifold* m, Body* a, Body* b)
 	Circle* A = (Circle*)a->m_shape;
 	Circle* B = (Circle*)b->m_shape;
 
-	Vector2 normal = b->m_position - a->m_position;
+	Vector2 vec_a_to_b = b->m_position - a->m_position;
 
-	float dist_sq = normal.x * normal.x + normal.y * normal.y;
+	float dist_sq = vec_a_to_b.x * vec_a_to_b.x + vec_a_to_b.y * vec_a_to_b.y;
 	
 	float sum_radius = A->m_radius + B->m_radius;
 
@@ -28,7 +28,7 @@ void Collision::CircleToCircle(Manifold* m, Body* a, Body* b)
 	if (dist != 0)
 	{
 		m->m_penetration = sum_radius - dist;
-		m->m_normal = normal / dist;
+		m->m_normal = vec_a_to_b / dist;
 		m->m_is_contact = 1;
 		m->m_contacts[0] = m->m_normal * A->m_radius + a->m_position;
 		//Debug_Draw::GetInstance().DrawSegment(b->m_position, a->m_position);
@@ -50,7 +50,6 @@ void Collision::AABBToAABB(Manifold* m, Body* a, Body* b)
 
 		if (y_overlap > 0)
 		{
-			Debug_Draw::GetInstance().DrawSegment(b->m_position, a->m_position);
 			if (x_overlap > y_overlap)
 			{
 				if (vec_a_b.y < 0)
@@ -122,7 +121,7 @@ void Collision::AABBToCircle(Manifold* m, Body* a, Body* b)
 	if (dist_sq > radius * radius)
 		return;
 
-	Debug_Draw::GetInstance().DrawPoint(a->m_position + closest);
+	//Debug_Draw::GetInstance().DrawSegment(a->m_position, a->m_position + closest);
 
 	float dist = std::sqrt(dist_sq);
 
@@ -137,6 +136,11 @@ void Collision::AABBToCircle(Manifold* m, Body* a, Body* b)
 		m->m_normal = normal;
 		m->m_penetration = radius - dist;
 		m->m_is_contact = 1;
+
+		m->m_contacts[0] = vec_a_b - normal + a->m_position;
+
+		Debug_Draw::GetInstance().DrawSegment(m->m_contacts[0], a->m_position);
+
 	}
 }
 

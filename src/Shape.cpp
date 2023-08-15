@@ -44,6 +44,9 @@ ShapeType AABB::GetType() const
 
 void AABB::ComputeMass(float density)
 {
-	m_body->m_mass_data.mass = (m_width * m_height) * density;
+	/*m_body->m_mass_data.mass = (m_width * m_height) * density;
 	m_body->m_mass_data.inverse_mass = (m_body->m_mass_data.mass) ? 1.f / m_body->m_mass_data.mass : 0.f;
+
+	m_body->m_mass_data.inertia = (m_width * m_height * m_height * m_height) / 12;
+	m_body->m_mass_data.inverse_inertia = (m_body->m_mass_data.inertia) ? 1.f / m_body->m_mass_data.inertia : 0.f;*/
 }

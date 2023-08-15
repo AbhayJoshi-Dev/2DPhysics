@@ -52,6 +52,14 @@ public:
 
 	Vector2& Normalize();
 
+	Vector2 Cross(float s);
+
+	float Cross(const Vector2& v) const;
+
+	Vector2 operator-() const;
+
+
+
 public:
 
 	float x = 0.f;

@@ -107,3 +107,18 @@ Vector2& Vector2::Normalize()
 	}
 	return *this;
 }
+
+Vector2 Vector2::Cross(float s)
+{
+	return Vector2(-s * y, s * x);
+}
+
+float Vector2::Cross(const Vector2& v) const
+{
+	return x * v.y - y * v.x;
+}
+
+Vector2 Vector2::operator-()const
+{
+	return Vector2(-x, -y);
+}
