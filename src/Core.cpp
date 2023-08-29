@@ -55,7 +55,7 @@ void Core::Loop()
 					int mouse_x, mouse_y;
 					SDL_GetMouseState(&mouse_x, &mouse_y);
 
-					Body* b = new Body(Circle(20), Vector2(mouse_x, mouse_y), false);
+					Body* b = new Body(Circle(15), Vector2(mouse_x, mouse_y), false);
 					m_scene->AddBody(b);
 				}
 				else if (m_event.button.button == SDL_BUTTON_RIGHT)

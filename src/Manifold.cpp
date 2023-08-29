@@ -34,7 +34,14 @@ void Manifold::ResolveCollision()
 	Vector2 rel_b = m_contacts[0] - _B->m_position;
 
 
+	// counter-clockwise perpendicular Vector 
+	//Vector2 rel_a_prep(-rel_a.y, rel_a.x);
+	//Vector2 rel_b_prep(-rel_b.y, rel_b.x);
+
+
 	// calculate relative velocity
+	//Vector2 angular_linear_vel_a = rel_a_prep * _A->m_angular_velocity;
+	//Vector2 angular_linear_vel_b = rel_b_prep * _B->m_angular_velocity;
 	Vector2 rel_vel_ab = _B->m_velocity + rel_b.Cross(_B->m_angular_velocity) - _A->m_velocity - rel_a.Cross(_A->m_angular_velocity);
 
 	// calculate relative velocity along the normal
@@ -45,7 +52,9 @@ void Manifold::ResolveCollision()
 		return;
 
 	// restitution
-	float e = 0.3f;
+	float e = 0.5f;
+
+
 
 
 	//mass sum inverse
@@ -72,7 +81,10 @@ void Manifold::ResolveCollision()
 	//Friction Impulse
 
 	//Re-calculate relative velocity
-	rel_vel_ab = _B->m_velocity + rel_b.Cross(_B->m_angular_velocity) - _A->m_velocity - rel_a.Cross(_A->m_angular_velocity);
+	 //angular_linear_vel_a = rel_a_prep * _A->m_angular_velocity;
+	// angular_linear_vel_b = rel_b_prep * _B->m_angular_velocity;
+	 rel_vel_ab = _B->m_velocity + rel_b.Cross(_B->m_angular_velocity) - _A->m_velocity - rel_a.Cross(_A->m_angular_velocity);
+
 
 	//Calculate  tangent vector
 	Vector2 t = rel_vel_ab - (m_normal * rel_vel_ab.Dot(m_normal));

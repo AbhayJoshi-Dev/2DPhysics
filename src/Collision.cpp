@@ -127,13 +127,13 @@ void Collision::AABBToCircle(Manifold* m, Body* a, Body* b)
 
 	if (inside)
 	{
-		m->m_normal = normal * -1;
+		m->m_normal = normal / dist * -1;
 		m->m_penetration = radius - dist;
 		m->m_is_contact = 1;
 	}
 	else
 	{
-		m->m_normal = normal;
+		m->m_normal = normal / dist;
 		m->m_penetration = radius - dist;
 		m->m_is_contact = 1;
 

@@ -10,7 +10,6 @@ Body::Body(const Shape &shape, Vector2 position, bool is_static):
 	m_angular_velocity(0.f)
 {
 	m_shape->m_body = this;
-	m_shape->ComputeMass(m_material.m_density);
 
 	if (is_static)
 	{
@@ -20,6 +19,8 @@ Body::Body(const Shape &shape, Vector2 position, bool is_static):
 		m_mass_data.inertia = 0.f;
 		m_mass_data.inverse_inertia = 0.f;
 	}
+	else
+		m_shape->ComputeMass(m_material.m_density);
 
 }
 
