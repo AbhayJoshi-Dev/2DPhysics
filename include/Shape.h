@@ -1,8 +1,10 @@
 #pragma once
 
-#include"Vector2.h"
+#include "MathUtils.h"
 
 class Body;
+
+#define MAX_POLYGON_VERTICES 8
 
 enum ShapeType
 {
@@ -41,7 +43,19 @@ public:
 
 class Polygon : public Shape
 {
-	Polygon();
+public:
+
+	Polygon() = default;
+	Shape* Clone() const override;
+	ShapeType GetType() const override;
+	void ComputeMass(float density) override;
+	void Set(Vector2* vertices, int count);
+
+public:
+
+	Vector2 m_vertices[MAX_POLYGON_VERTICES];
+	Vector2 m_normals[MAX_POLYGON_VERTICES];
+	int m_count;
 };
 
 class AABB : public Shape

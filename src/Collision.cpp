@@ -13,7 +13,7 @@ void Collision::CircleToCircle(Manifold* m, Body* a, Body* b)
 
 	Vector2 vec_a_to_b = b->m_position - a->m_position;
 
-	float dist_sq = vec_a_to_b.x * vec_a_to_b.x + vec_a_to_b.y * vec_a_to_b.y;
+	float dist_sq = vec_a_to_b.LengthSquared();
 	
 	float sum_radius = A->m_radius + B->m_radius;
 
@@ -28,10 +28,10 @@ void Collision::CircleToCircle(Manifold* m, Body* a, Body* b)
 	if (dist != 0)
 	{
 		m->m_penetration = sum_radius - dist;
-		m->m_normal = vec_a_to_b / dist;
+		m->m_normal = vec_a_to_b.Normalize();
 		m->m_is_contact = 1;
-		m->m_contacts[0] = m->m_normal * A->m_radius + a->m_position;
-		//Debug_Draw::GetInstance().DrawSegment(b->m_position, a->m_position);
+		m->m_contacts[0] = a->m_position + m->m_normal * (A->m_radius - m->m_penetration);
+		Debug_Draw::GetInstance().DrawSegment(a->m_position, m->m_contacts[0]);
 	}
 }
 
@@ -42,22 +42,27 @@ void Collision::AABBToAABB(Manifold* m, Body* a, Body* b)
 
 	Vector2 vec_a_b = b->m_position - a->m_position;
 
-	float x_overlap = (A->m_width + B->m_width) / 2 - std::abs(vec_a_b.x);
+	float half_width_sum = (A->m_width + B->m_width) / 2;
 
-	if (x_overlap > 0)
+	if (half_width_sum > std::abs(vec_a_b.x))
 	{
-		float y_overlap = (A->m_height + B->m_height) / 2 - std::abs(vec_a_b.y);
+		float half_height_sum = (A->m_height + B->m_height) / 2;
 
-		if (y_overlap > 0)
+		if (half_height_sum > std::abs(vec_a_b.y))
 		{
-			if (x_overlap > y_overlap)
+
+			float penetration_x = half_width_sum - std::abs(vec_a_b.x);
+			float penetration_y = half_height_sum - std::abs(vec_a_b.y);
+
+
+			if (penetration_y < penetration_x)
 			{
 				if (vec_a_b.y < 0)
 					m->m_normal = Vector2(0, -1);
 				else
 					m->m_normal = Vector2(0, 1);
 
-				m->m_penetration = y_overlap;
+				m->m_penetration = penetration_y;
 				m->m_is_contact = 1;
 				return;
 			}
@@ -68,7 +73,7 @@ void Collision::AABBToAABB(Manifold* m, Body* a, Body* b)
 				else
 					m->m_normal = Vector2(1, 0);
 
-				m->m_penetration = x_overlap;
+				m->m_penetration = penetration_x;
 				m->m_is_contact = 1;
 				return;
 			}
@@ -77,6 +82,35 @@ void Collision::AABBToAABB(Manifold* m, Body* a, Body* b)
 }
 
 void Collision::AABBToCircle(Manifold* m, Body* a, Body* b)
+{
+	AABB* A = (AABB*)a->m_shape;
+	Circle* B = (Circle*)b->m_shape;
+
+	Vector2 AABB_size(A->m_width / 2, A->m_height / 2);
+
+	Vector2 delta_a_b = b->m_position - a->m_position;
+
+	Vector2 closest_point(SDL_clamp(delta_a_b.x, -AABB_size.x, AABB_size.x),
+						  SDL_clamp(delta_a_b.y, -AABB_size.y, AABB_size.y));
+
+	// Vector from closest point to delta_a_b vector
+	Vector2 n = delta_a_b - closest_point;
+
+	float dist_sq = n.LengthSquared();
+	float radius = B->m_radius;
+
+	if (dist_sq > radius * radius)
+		return;
+
+	float dist = std::sqrt(dist_sq);
+	m->m_normal = n.Normalize();
+	m->m_penetration = radius - dist;
+
+	m->m_is_contact = 1;
+	m->m_contacts[0] = -m->m_normal * radius + b->m_position;
+}
+
+/*void Collision::AABBToCircle(Manifold* m, Body* a, Body* b)
 {
 	AABB* A = (AABB*)a->m_shape;
 	Circle* B = (Circle*)b->m_shape;
@@ -130,6 +164,7 @@ void Collision::AABBToCircle(Manifold* m, Body* a, Body* b)
 		m->m_normal = normal / dist * -1;
 		m->m_penetration = radius - dist;
 		m->m_is_contact = 1;
+		//m->m_contacts[0] = vec_a_b - normal + a->m_position;
 	}
 	else
 	{
@@ -142,7 +177,7 @@ void Collision::AABBToCircle(Manifold* m, Body* a, Body* b)
 		Debug_Draw::GetInstance().DrawSegment(m->m_contacts[0], a->m_position);
 
 	}
-}
+}*/
 
 void Collision::CircleToAABB(Manifold* m, Body* a, Body* b)
 {

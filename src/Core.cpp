@@ -152,21 +152,22 @@ void Core::Render()
 			Draw_Circle(m_renderer, body->m_position.x, body->m_position.y, rad, 255, 255, 255, 255);
 
 
-			Vector2 r1(1.f, 0.f);
-			float c = std::cos(body->m_orientation);
-			float s = std::sin(body->m_orientation);
+			//Vector2 r1(1.f, 0.f);
+			//float c = std::cos(body->m_orientation);
+			//float s = std::sin(body->m_orientation);
 
-			Vector2 r;
+			//Vector2 r;
 
-			r.x = r1.x * c - r1.y * s;   //v1.x * v2.x - v1.y * v2.y
-			r.y = r1.x * s + r1.y * c;   //v1.x * v2.y + v1.y * v2.x
+			//r.x = r1.x * c - r1.y * s;   //v1.x * v2.x - v1.y * v2.y
+			//r.y = r1.x * s + r1.y * c;   //v1.x * v2.y + v1.y * v2.x
 
-			r = r * rad;
+			//r = r * rad;
 
-			//float x = rad * std::cos(body->m_orientation);
-			//float y = rad * std::sin(body->m_orientation);
+			float x = rad * cos(body->m_orientation);
+			float y = rad * sin(body->m_orientation);
 
 
+			Vector2 r(x, y);
 			r = r + body->m_position;
 			Debug_Draw::GetInstance().DrawSegment(body->m_position, r);
 

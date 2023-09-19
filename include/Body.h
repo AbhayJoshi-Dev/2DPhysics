@@ -1,7 +1,6 @@
 #pragma once
 
 #include"Shape.h"
-#include"Vector2.h"
 
 struct MassData
 {

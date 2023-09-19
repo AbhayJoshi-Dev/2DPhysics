@@ -3,14 +3,14 @@
 #include<SDL.h>
 #include<vector>
 
-#include"Vector2.h"
+#include"MathUtils.h"
 
 struct LineSegment
 {
 	Vector2 m_start;
 	Vector2 m_end;
 
-	LineSegment(Vector2 start, Vector2 end):
+	LineSegment(const Vector2& start,const Vector2& end):
 		m_start(start), m_end(end)
 	{}
 };

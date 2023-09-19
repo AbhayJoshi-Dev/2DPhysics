@@ -13,7 +13,7 @@ Debug_Draw& Debug_Draw::GetInstance()
 	return *instance;
 }
 
-void Debug_Draw::DrawSegment(Vector2 start, Vector2 end)
+void Debug_Draw::DrawSegment(Vector2 start,Vector2 end)
 {
 	m_lines.emplace_back(start, end);
 }

@@ -53,5 +53,5 @@ void Body::IntegrateVelocities(const float dt)
 void Body::ApplyImpule(const Vector2& impulse, const Vector2& contact_vector)
 {
 	m_velocity += impulse * m_mass_data.inverse_mass;
-	m_angular_velocity += m_mass_data.inverse_inertia * contact_vector.Cross(impulse);
+	m_angular_velocity += m_mass_data.inverse_inertia * Cross(contact_vector, impulse);
 }

@@ -42,10 +42,10 @@ void Manifold::ResolveCollision()
 	// calculate relative velocity
 	//Vector2 angular_linear_vel_a = rel_a_prep * _A->m_angular_velocity;
 	//Vector2 angular_linear_vel_b = rel_b_prep * _B->m_angular_velocity;
-	Vector2 rel_vel_ab = _B->m_velocity + rel_b.Cross(_B->m_angular_velocity) - _A->m_velocity - rel_a.Cross(_A->m_angular_velocity);
+	Vector2 rel_vel_ab = _B->m_velocity + Cross(rel_b, _B->m_angular_velocity) - _A->m_velocity - Cross(rel_a, _A->m_angular_velocity);
 
 	// calculate relative velocity along the normal
-	float vel_n = rel_vel_ab.Dot(m_normal);
+	float vel_n = Dot(rel_vel_ab, m_normal);
 
 	// do not resolve if velocities are seperating
 	if (vel_n > 0)
@@ -58,8 +58,8 @@ void Manifold::ResolveCollision()
 
 
 	//mass sum inverse
-	float rel_a_cross_n = rel_a.Cross(m_normal);
-	float rel_b_cross_n = rel_b.Cross(m_normal);
+	float rel_a_cross_n = Cross(rel_a, m_normal);
+	float rel_b_cross_n = Cross(rel_b, m_normal);
 	float inv_mass_sum = _A->m_mass_data.inverse_mass + _B->m_mass_data.inverse_mass +
 						(rel_a_cross_n * rel_a_cross_n) * _A->m_mass_data.inverse_inertia + (rel_b_cross_n * rel_b_cross_n) * _B->m_mass_data.inverse_inertia;
 
@@ -83,18 +83,18 @@ void Manifold::ResolveCollision()
 	//Re-calculate relative velocity
 	 //angular_linear_vel_a = rel_a_prep * _A->m_angular_velocity;
 	// angular_linear_vel_b = rel_b_prep * _B->m_angular_velocity;
-	 rel_vel_ab = _B->m_velocity + rel_b.Cross(_B->m_angular_velocity) - _A->m_velocity - rel_a.Cross(_A->m_angular_velocity);
+	 rel_vel_ab = _B->m_velocity + Cross(rel_b, _B->m_angular_velocity) - _A->m_velocity - Cross(rel_a, _A->m_angular_velocity);
 
 
 	//Calculate  tangent vector
-	Vector2 t = rel_vel_ab - (m_normal * rel_vel_ab.Dot(m_normal));
+	Vector2 t = rel_vel_ab - (m_normal * Dot(rel_vel_ab, m_normal));
 	t.Normalize();
 
 	// draw tangent
 	Debug_Draw::GetInstance().DrawSegment(m_contacts[0], m_contacts[0] + t * 10.f);
 
 	//Solve jt to apply along friction vector
-	float jt = -rel_vel_ab.Dot(t);
+	float jt = -Dot(rel_vel_ab, t);
 	//jt /= (1 / _A->m_mass_data.mass + 1 / _B->m_mass_data.mass);
 	jt /= inv_mass_sum;
 

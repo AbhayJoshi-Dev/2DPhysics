@@ -50,3 +50,8 @@ void AABB::ComputeMass(float density)
 	m_body->m_mass_data.inertia = m_body->m_mass_data.mass * (m_width * m_width + m_height * m_height) / 12;
 	m_body->m_mass_data.inverse_inertia = (m_body->m_mass_data.inertia) ? 1.f / m_body->m_mass_data.inertia : 0.f;
 }
+
+void Polygon::Set(Vector2* vertices, int count)
+{
+
+}
