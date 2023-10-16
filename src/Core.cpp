@@ -22,8 +22,12 @@ Core::Core():
 
 	m_scene = new Scene();
 
-	Body* b = new Body(AABB(700, 25), { 400, 500 }, true);
+	AABB aabb(700, 25);
+
+	Body* b = new Body(&aabb, { 400, 500 }, true);
 	m_scene->AddBody(b);
+
+	srand(3);
 }
 
 Core::~Core()
@@ -55,7 +59,9 @@ void Core::Loop()
 					int mouse_x, mouse_y;
 					SDL_GetMouseState(&mouse_x, &mouse_y);
 
-					Body* b = new Body(Circle(15), Vector2(mouse_x, mouse_y), false);
+
+					Circle circle(15.f);
+					Body* b = new Body(&circle, Vector2(mouse_x, mouse_y), false);
 					m_scene->AddBody(b);
 				}
 				else if (m_event.button.button == SDL_BUTTON_RIGHT)
@@ -63,8 +69,20 @@ void Core::Loop()
 					int mouse_x, mouse_y;
 					SDL_GetMouseState(&mouse_x, &mouse_y);
 
-					Body* b1 = new Body(AABB(25, 25), Vector2(mouse_x, mouse_y), false);
+					Polygon poly;
+
+					int v = Random(50, 100);
+
+					Vector2* vertices = new Vector2[4];
+					for (int i = 0; i < 4; i++)
+						vertices[i] = { (float)Random(-v, v), (float)Random(-v, v) };
+
+					poly.Set(vertices, 4);
+
+					Body* b1 = new Body(&poly, Vector2(mouse_x, mouse_y), false);
 					m_scene->AddBody(b1);
+
+					delete [] vertices;
 				}
 			}
 		}
@@ -72,17 +90,16 @@ void Core::Loop()
 		m_scene->Update(1.f / SCREEN_FPS);
 		Render();
 
-		++m_counted_frames;
+		m_counted_frames++;
 
-
-		if (m_fps_timer.GetTicks() > 1000)
+		if (m_fps_timer.GetTicks() > 1000.f)
 		{
 			m_fps_timer.Stop();
 			std::cout << m_counted_frames << std::endl;
 			m_counted_frames = 0;
 		}
 
-		int frames_ticks = m_cap_timer.GetTicks();
+		uint32_t frames_ticks = m_cap_timer.GetTicks();
 		if (frames_ticks < SCREEN_TICKS_PER_FRAME)
 			SDL_Delay(SCREEN_TICKS_PER_FRAME - frames_ticks);
 	}
@@ -184,6 +201,26 @@ void Core::Render()
 
 			SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
 			SDL_RenderDrawRect(m_renderer, &rect);
+		}
+		else if (body->m_shape->GetType() == POLYGON)
+		{
+			Polygon* poly = (Polygon*)body->m_shape;
+			int count = poly->m_count;
+			Vector2* vertices = poly->m_vertices;
+				
+			Mat22 m(body->m_orientation);
+
+			for (int i = 0; i < count; i++)
+			{
+				SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+				int i1 = i + 1 < count ? i + 1 : 0;
+
+
+				Vector2 v1 = body->m_position + m * vertices[i];
+				Vector2 v2 = body->m_position + m * vertices[i1];
+
+				SDL_RenderDrawLine(m_renderer, v2.x, v2.y, v1.x, v1.y);
+			}
 		}
 	}
 

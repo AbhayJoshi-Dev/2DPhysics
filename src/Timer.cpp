@@ -48,9 +48,9 @@ void Timer::UnPause()
 	}
 }
 
-Uint32 Timer::GetTicks()
+uint32_t Timer::GetTicks()
 {
-	Uint32 time = 0;
+	uint32_t time = 0;
 
 	if (m_started)
 	{

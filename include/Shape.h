@@ -50,12 +50,14 @@ public:
 	ShapeType GetType() const override;
 	void ComputeMass(float density) override;
 	void Set(Vector2* vertices, int count);
+	Vector2 GetSupport(const Vector2& direction) const;
 
 public:
 
 	Vector2 m_vertices[MAX_POLYGON_VERTICES];
 	Vector2 m_normals[MAX_POLYGON_VERTICES];
 	int m_count;
+	Vector2 m_centroid;
 };
 
 class AABB : public Shape

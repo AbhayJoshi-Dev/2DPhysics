@@ -1,9 +1,10 @@
-#include"Body.h"
-
 #include<iostream>
 
-Body::Body(const Shape &shape, Vector2 position, bool is_static):
-	m_shape(shape.Clone()),
+#include"Body.h"
+#include"Debug_Draw.h"
+
+Body::Body(Shape *shape, Vector2 position, bool is_static):
+	m_shape(shape->Clone()),
 	m_position(position),
 	m_velocity(0.f, 0.f),
 	m_orientation(0.f),

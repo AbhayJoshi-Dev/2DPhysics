@@ -27,7 +27,7 @@ void Debug_Draw::Draw(SDL_Renderer* renderer)
 {
 	for (int i = 0; i < m_lines.size(); i++)
 	{
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 		SDL_RenderDrawLine(renderer, m_lines[i].m_start.x, m_lines[i].m_start.y, m_lines[i].m_end.x, m_lines[i].m_end.y);
 	}
 

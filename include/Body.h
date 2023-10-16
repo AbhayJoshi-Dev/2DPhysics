@@ -21,7 +21,7 @@ class Body
 {
 public:
 
-	Body(const Shape &shape, Vector2 position, bool is_static);
+	Body(Shape *shape, Vector2 position, bool is_static);
 	void AddForce(const Vector2& force);
 	void IntegrateForces(const float dt);
 	void IntegrateVelocities(const float dt);

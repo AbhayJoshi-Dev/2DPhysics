@@ -12,14 +12,14 @@ public:
 	void Pause();
 	void UnPause();
 
-	Uint32 GetTicks();
+	uint32_t GetTicks();
 
 	bool IsStarted();
 	bool IsPaused();
 
 private:
-	Uint32 m_startTicks;
-	Uint32 m_pausedTicks;
+	uint32_t m_startTicks;
+	uint32_t m_pausedTicks;
 
 	bool m_paused;
 	bool m_started;

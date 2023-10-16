@@ -25,6 +25,10 @@ void Manifold::Solve()
 	//CircletoAABB
 	if (_A->m_shape->GetType() == CIRCLE && _B->m_shape->GetType() == AABB_)
 		Collision::CircleToAABB(this, _A, _B);
+
+	//PolygontoPolygon
+	if (_A->m_shape->GetType() == POLYGON && _B->m_shape->GetType() == POLYGON)
+		Collision::PolygonToPolygon(this, _A, _B);
 }
 
 void Manifold::ResolveCollision()
