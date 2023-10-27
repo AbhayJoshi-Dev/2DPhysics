@@ -35,7 +35,7 @@ void Body::IntegrateForces(const float dt)
 	// Semi-Implicit Euler Integration (or Symplectic Euler Integration)
 	if (m_mass_data.inverse_mass == 0.f)
 		return;
-	m_velocity += (m_force * m_mass_data.inverse_mass + Vector2(0.f, 500.f)) * (dt / 2.f);
+	m_velocity += (m_force * m_mass_data.inverse_mass + Vector2(0.f, 0.f)) * (dt / 2.f);
 	m_angular_velocity += m_torque * m_mass_data.inverse_inertia * (dt / 2.f);
 }
 

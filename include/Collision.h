@@ -189,6 +189,37 @@ namespace Collision
 		AABBToCircle(m, b, a);
 		m->m_normal = m->m_normal * -1;
 	}
+
+	void FindIncidentFace(Vector2* v, Polygon* referencePoly, Polygon* incidentPoly, int referenceIndex)
+	{
+		Vector2 referenceNormal = referencePoly->m_normals[referenceIndex];
+
+		Mat22 rot_ref(referencePoly->m_body->m_orientation);
+		Mat22 rot_inc(incidentPoly->m_body->m_orientation);
+
+		// Compute the normal of the reference face in incidentPolygon's frame.
+		referenceNormal = rot_ref * referenceNormal; // to world space 
+		referenceNormal = rot_inc.Transpose() * referenceNormal; //to incident poly's local space
+
+		int incidentFaceIndex = 0;
+		float minDot = FLT_MAX;
+
+		for (int i = 0; i < incidentPoly->m_count; i++)
+		{
+			float dot = Dot(referenceNormal, incidentPoly->m_normals[i]);
+
+			if (dot < minDot)
+			{
+				minDot = dot;
+				incidentFaceIndex = i;
+			}
+		}
+
+		// Assign face vertices for incidentFace
+		v[0] = rot_inc * incidentPoly->m_vertices[incidentFaceIndex] + incidentPoly->m_body->m_position;
+		incidentFaceIndex = incidentFaceIndex + 1 >= incidentPoly->m_count ? 0 : incidentFaceIndex + 1;
+		v[1] = rot_inc * incidentPoly->m_vertices[incidentFaceIndex] + incidentPoly->m_body->m_position;
+	}
 	
 	float FindLeastPenetration(int *face, Polygon* A, Polygon* B)
 	{
@@ -204,7 +235,6 @@ namespace Collision
 			Vector2 n = A->m_normals[i];
 			Vector2 n_rotA = rotA * n;
 
-		//	Debug_Draw::GetInstance().DrawSegment(A->m_body->m_position, A->m_body->m_position + (-n * 50.f));
 
 			// Transform face normal into B's local space
 			Mat22 rotB_T = rotB.Transpose();
@@ -213,7 +243,6 @@ namespace Collision
 			// Calculate support point from B along -n
 			Vector2 support = B->GetSupport(-n);
 
-			//Debug_Draw::GetInstance().DrawSegment(B->m_body->m_position, B->m_body->m_position + support);
 
 			// vertex on face from A, transform into
 			// B's local space
@@ -221,10 +250,6 @@ namespace Collision
 			v = rotA * v + A->m_body->m_position;
 			v -= B->m_body->m_position;
 			v = rotB_T * v;
-			
-
-			//Debug_Draw::GetInstance().DrawSegment(B->m_body->m_position, B->m_body->m_position + (support - v));
-			//Debug_Draw::GetInstance().DrawSegment(B->m_body->m_position, B->m_body->m_position + (n * 50.f));
 
 
 			// Calculate penetration distance 
@@ -261,6 +286,40 @@ namespace Collision
 			return;
 
 		std::cout << "Collision!" << std::endl;
+
+
+		int referenceIndex;
+		bool flip;
+
+		Polygon* referencePolygon;
+		Polygon* incidentPolygon;
+
+		const float k_tol = 0.1f * 0.0005f;
+
+		//find which polygon contains reference face
+		if (penetration_B > penetration_A + k_tol)
+		{
+			referencePolygon = A;
+			incidentPolygon = B;
+
+			referenceIndex = face_A;
+			flip = false;
+		}
+		else
+		{
+			referencePolygon = B;
+			incidentPolygon = A;
+
+			referenceIndex = face_B;
+			flip = true;
+		}
+
+
+		Vector2 incidentface[2];
+
+		FindIncidentFace(incidentface, referencePolygon, incidentPolygon, referenceIndex);
+
+		Debug_Draw::GetInstance().DrawSegment(incidentface[0], incidentface[1]);
 	}
 
 }
