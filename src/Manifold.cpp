@@ -1,14 +1,11 @@
 #include"Manifold.h"
 #include"Collision.h"
-#include"Debug_Draw.h"
-
-#include<iostream>
 
 Manifold::Manifold(Body* A, Body* B):
 	_A(A),
 	_B(B)
 {
-
+	m_is_contact = 0;
 }
 
 void Manifold::Solve()
@@ -95,7 +92,7 @@ void Manifold::ResolveCollision()
 	t.Normalize();
 
 	// draw tangent
-	Debug_Draw::GetInstance().DrawSegment(m_contacts[0], m_contacts[0] + t * 10.f);
+	//Debug_Draw::GetInstance().DrawSegment(m_contacts[0], m_contacts[0] + t * 10.f);
 
 	//Solve jt to apply along friction vector
 	float jt = -Dot(rel_vel_ab, t);

@@ -1,14 +1,15 @@
 #include<iostream>
 
 #include"Body.h"
-#include"Debug_Draw.h"
 
 Body::Body(Shape *shape, Vector2 position, bool is_static):
 	m_shape(shape->Clone()),
 	m_position(position),
 	m_velocity(0.f, 0.f),
 	m_orientation(0.f),
-	m_angular_velocity(0.f)
+	m_angular_velocity(0.f),
+	m_force(0.f, 0.f),
+	m_torque(0.f)
 {
 	m_shape->m_body = this;
 
@@ -35,7 +36,7 @@ void Body::IntegrateForces(const float dt)
 	// Semi-Implicit Euler Integration (or Symplectic Euler Integration)
 	if (m_mass_data.inverse_mass == 0.f)
 		return;
-	m_velocity += (m_force * m_mass_data.inverse_mass + Vector2(0.f, 0.f)) * (dt / 2.f);
+	m_velocity += (m_force * m_mass_data.inverse_mass + Vector2(0.f, 500.f)) * (dt / 2.f);
 	m_angular_velocity += m_torque * m_mass_data.inverse_inertia * (dt / 2.f);
 }
 

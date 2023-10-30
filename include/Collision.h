@@ -3,7 +3,7 @@
 #include<iostream>
 
 #include"Manifold.h"
-#include"Debug_Draw.h"
+//#include"Debug_Draw.h"
 
 
 namespace Collision
@@ -33,7 +33,6 @@ namespace Collision
 			m->m_normal = vec_a_to_b.Normalize();
 			m->m_is_contact = 1;
 			m->m_contacts[0] = a->m_position + m->m_normal * (A->m_radius - m->m_penetration);
-			Debug_Draw::GetInstance().DrawSegment(a->m_position, m->m_contacts[0]);
 		}
 	}
 
@@ -268,6 +267,11 @@ namespace Collision
 		return best_distance;
 	}
 
+	int Clip(Vector2 normal, float c, Vector2* face)
+	{
+		return 0;
+	}
+
 	void PolygonToPolygon(Manifold* m, Body* a, Body* b)
 	{
 		Polygon* A = (Polygon*)a->m_shape;
@@ -299,19 +303,19 @@ namespace Collision
 		//find which polygon contains reference face
 		if (penetration_B > penetration_A + k_tol)
 		{
-			referencePolygon = A;
-			incidentPolygon = B;
-
-			referenceIndex = face_A;
-			flip = false;
-		}
-		else
-		{
 			referencePolygon = B;
 			incidentPolygon = A;
 
 			referenceIndex = face_B;
 			flip = true;
+		}
+		else
+		{
+			referencePolygon = A;
+			incidentPolygon = B;
+
+			referenceIndex = face_A;
+			flip = false;
 		}
 
 
@@ -319,7 +323,42 @@ namespace Collision
 
 		FindIncidentFace(incidentface, referencePolygon, incidentPolygon, referenceIndex);
 
-		Debug_Draw::GetInstance().DrawSegment(incidentface[0], incidentface[1]);
+
+		//setup reference face vertices
+		Vector2 r1 = referencePolygon->m_vertices[referenceIndex];
+		referenceIndex = referenceIndex + 1 >= referencePolygon->m_count ? 0 : referenceIndex + 1;
+		Vector2 r2 = referencePolygon->m_vertices[referenceIndex];
+
+		// transform reference face vertices to world space
+		Mat22 rotRef(referencePolygon->m_body->m_orientation);
+
+		r1 = rotRef * r1 + referencePolygon->m_body->m_position;
+		r2 = rotRef * r2 + referencePolygon->m_body->m_position;
+
+	//	Debug_Draw::GetInstance().DrawSegment(r1, r2);
+
+		//Calculate tangent along reference face (world space)
+		Vector2 tangent = (r2 - r1).Normalize();
+
+		//compute normal to reference face
+		Vector2 normal = -Cross(tangent, 1.0f);
+		//Vector2 normal(tangent.y, -tangent.x);
+
+
+		// ax + by = c
+		// c is distance from origin
+		//calculating distance from origin to reference face vertices along normal and tangent
+		float frontOffset = Dot(normal, r1);
+
+		float negSide = -Dot(tangent, r1);
+		float posSide = Dot(tangent, r2);
+
+
+	//	Debug_Draw::GetInstance().DrawSegment(Vector2(0.f, 0.f), -normal * 1000);
+		//Debug_Draw::GetInstance().DrawSegment(Vector2(0.f, 0.f), r1);
+
+
+
 	}
 
 }
