@@ -23,7 +23,7 @@ void Scene::Update(const float dt)
 
 			Manifold manifold(A, B);
 			manifold.Solve();
-			if (manifold.m_is_contact)
+			if (manifold.m_contactCount)
 				m_contacts.emplace_back(manifold);
 		}
 	}

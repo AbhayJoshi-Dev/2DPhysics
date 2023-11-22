@@ -1,9 +1,7 @@
 #include"Debug_Draw.h"
-#include"Core.h"
 
 Debug_Draw::Debug_Draw()
 {
-	std::cout << "Created" << std::endl;
 }
 
 Debug_Draw& Debug_Draw::GetInstance()

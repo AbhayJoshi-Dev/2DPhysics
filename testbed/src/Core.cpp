@@ -22,10 +22,25 @@ Core::Core():
 
 	m_scene = new Scene();
 
-	AABB aabb(700, 25);
+	//AABB aabb(700, 25);
 
-	Body* b = new Body(&aabb, { 400, 500 }, true);
-	m_scene->AddBody(b);
+	//Body* b = new Body(&aabb, { 400, 500 }, true);
+	//m_scene->AddBody(b);
+
+
+
+	Polygon poly;
+
+	Vector2 vertices[4] = { Vector2(0.f,0.f), Vector2(700.f,0.f) , Vector2(700.f,50.f) , Vector2(0.f,50.f)};
+	
+
+	poly.Set(vertices, 4);
+
+	Body* b1 = new Body(&poly, Vector2(50.f, 500.f), true);
+	m_scene->AddBody(b1);
+
+
+
 
 	srand(3);
 }

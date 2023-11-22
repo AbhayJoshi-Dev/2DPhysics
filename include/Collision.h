@@ -3,7 +3,6 @@
 #include<iostream>
 
 #include"Manifold.h"
-//#include"Debug_Draw.h"
 
 
 namespace Collision
@@ -21,7 +20,7 @@ namespace Collision
 
 		if (dist_sq > sum_radius * sum_radius)
 		{
-			m->m_is_contact = 0;
+			m->m_contactCount = 0;
 			return;
 		}
 
@@ -31,7 +30,7 @@ namespace Collision
 		{
 			m->m_penetration = sum_radius - dist;
 			m->m_normal = vec_a_to_b.Normalize();
-			m->m_is_contact = 1;
+			m->m_contactCount = 1;
 			m->m_contacts[0] = a->m_position + m->m_normal * (A->m_radius - m->m_penetration);
 		}
 	}
@@ -65,7 +64,7 @@ namespace Collision
 						m->m_normal = Vector2(0, 1);
 
 					m->m_penetration = penetration_y;
-					m->m_is_contact = 1;
+					m->m_contactCount = 1;
 					return;
 				}
 				else
@@ -76,7 +75,7 @@ namespace Collision
 						m->m_normal = Vector2(1, 0);
 
 					m->m_penetration = penetration_x;
-					m->m_is_contact = 1;
+					m->m_contactCount = 1;
 					return;
 				}
 			}
@@ -102,6 +101,8 @@ namespace Collision
 		float dist_sq = n.LengthSquared();
 		float radius = B->m_radius;
 
+		m->m_contactCount = 0;
+
 		if (dist_sq > radius * radius)
 			return;
 
@@ -109,7 +110,7 @@ namespace Collision
 		m->m_normal = n.Normalize();
 		m->m_penetration = radius - dist;
 
-		m->m_is_contact = 1;
+		m->m_contactCount = 1;
 		m->m_contacts[0] = -m->m_normal * radius + b->m_position;
 	}
 
@@ -269,7 +270,33 @@ namespace Collision
 
 	int Clip(Vector2 normal, float c, Vector2* face)
 	{
-		return 0;
+
+		int count = 0;
+
+		Vector2 vOut[2];
+
+		//distance between reference plane vertex and incident vertex along tangent(or side plane normals) 
+		float dist1 = Dot(normal, face[0]) - c;
+		float dist2 = Dot(normal, face[1]) - c;
+
+
+		// If the incident plane vertices are behind(or inside reference polygon) the side planes
+		if (dist1 <= 0.0f) vOut[count++] = face[0];
+		if (dist2 <= 0.0f) vOut[count++] = face[1];
+
+		//If the points are on different sides of the side plane
+		if (dist1 * dist2 < 0.0f)
+		{
+			//Find intersection point of incident edge and side plane
+			float interp = dist1 / (dist1 - dist2);
+			vOut[count] = face[0] + interp * (face[1] - face[0]);
+			count++;
+		}
+
+		face[0] = vOut[0];
+		face[1] = vOut[1];
+
+		return count;
 	}
 
 	void PolygonToPolygon(Manifold* m, Body* a, Body* b)
@@ -281,15 +308,19 @@ namespace Collision
 		float penetration_A = FindLeastPenetration(&face_A, A, B);
 
 		if (penetration_A >= 0.f)
+		{
+			m->m_contactCount = 0;
 			return;
+		}
 
 		int face_B;
 		float penetration_B = FindLeastPenetration(&face_B, B, A);
 
 		if (penetration_B >= 0.f)
+		{
+			m->m_contactCount = 0;
 			return;
-
-		std::cout << "Collision!" << std::endl;
+		}
 
 
 		int referenceIndex;
@@ -335,7 +366,7 @@ namespace Collision
 		r1 = rotRef * r1 + referencePolygon->m_body->m_position;
 		r2 = rotRef * r2 + referencePolygon->m_body->m_position;
 
-	//	Debug_Draw::GetInstance().DrawSegment(r1, r2);
+		//Debug_Draw::GetInstance().DrawSegment(r1, r2);
 
 		//Calculate tangent along reference face (world space)
 		Vector2 tangent = (r2 - r1).Normalize();
@@ -348,17 +379,50 @@ namespace Collision
 		// ax + by = c
 		// c is distance from origin
 		//calculating distance from origin to reference face vertices along normal and tangent
-		float frontOffset = Dot(normal, r1);
+		float frontOffset = Dot(normal, r1);// normal.x * r1.x + normal.y * r1.y = c
 
 		float negSide = -Dot(tangent, r1);
 		float posSide = Dot(tangent, r2);
 
 
-	//	Debug_Draw::GetInstance().DrawSegment(Vector2(0.f, 0.f), -normal * 1000);
-		//Debug_Draw::GetInstance().DrawSegment(Vector2(0.f, 0.f), r1);
 
+		if (Clip(-tangent, negSide, incidentface) < 2)
+			return;
 
+		if (Clip(tangent, posSide, incidentface) < 2)
+			return;
 
+		m->m_normal = flip ? -normal : normal;
+
+		m->m_contactCount = 1;
+		
+		int contactPoint = 0;
+		float seperation = Dot(normal, incidentface[0]) - frontOffset;
+
+	//	Debug_Draw::GetInstance().DrawSegment(Vector2(0.f, 0.f), normal * 1000.f);
+	//	Debug_Draw::GetInstance().DrawSegment(Vector2(0.f, 0.f), incidentface[0]);
+	//	Debug_Draw::GetInstance().DrawSegment(r1, normal * frontOffset);
+	//	Debug_Draw::GetInstance().DrawSegment(incidentface[0], normal * (seperation + frontOffset));
+
+		if (seperation <= 0.0f)
+		{
+			m->m_contacts[contactPoint] = incidentface[0];
+			m->m_penetration = -seperation;
+			contactPoint++;
+		}
+
+		seperation = Dot(normal, incidentface[1]) - frontOffset;
+		if (seperation <= 0.0f)
+		{
+			m->m_contacts[contactPoint] = incidentface[1];
+			m->m_penetration += -seperation;
+			contactPoint++;
+
+			//Average penetration
+			m->m_penetration /= contactPoint;
+		}
+
+		m->m_contactCount = contactPoint;
 	}
 
 }
