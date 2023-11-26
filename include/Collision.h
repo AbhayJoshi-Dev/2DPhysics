@@ -4,7 +4,6 @@
 
 #include"Manifold.h"
 
-
 namespace Collision
 {
 	void CircleToCircle(Manifold* m, Body* a, Body* b)
@@ -34,7 +33,6 @@ namespace Collision
 			m->m_contacts[0] = a->m_position + m->m_normal * (A->m_radius - m->m_penetration);
 		}
 	}
-
 
 	void AABBToAABB(Manifold* m, Body* a, Body* b)
 	{
@@ -423,6 +421,120 @@ namespace Collision
 		}
 
 		m->m_contactCount = contactPoint;
+	}
+
+
+	void CircleToPolygon(Manifold* m, Body* a, Body* b)
+	{
+		Circle* A = (Circle*)a->m_shape;
+		Polygon* B = (Polygon*)b->m_shape;
+
+		Mat22 rotB(b->m_orientation);
+
+		m->m_contactCount = 0;
+
+		//Transform circle's center(world space) to polygon local space
+		Vector2 circleCenter = a->m_position;
+		circleCenter -= b->m_position;
+		circleCenter = rotB.Transpose() * circleCenter;
+
+		// Find the min separating edge
+		//calculating the minimum seperation between polygon face and circle's center
+		float seperation = -FLT_MAX;
+		int faceNormal = 0;
+		for (int i = 0; i < B->m_count; i++)
+		{
+			float d = Dot(B->m_normals[i], circleCenter - B->m_vertices[i]);
+
+
+			if (d > A->m_radius)
+				return;
+			
+			if (d > seperation)
+			{
+				seperation = d;
+				faceNormal = i;
+			}
+		}
+
+		//faceNormal's vertices
+		Vector2 v1 = B->m_vertices[faceNormal];
+		int i2 = faceNormal + 1 < B->m_count ? faceNormal + 1 : 0;
+		Vector2 v2 = B->m_vertices[i2];
+
+		//circle center within polygon
+		if (seperation < FLT_EPSILON)
+		{
+			m->m_contactCount = 1;
+			m->m_normal = -(rotB * B->m_normals[faceNormal]);
+			m->m_contacts[0] = m->m_normal * A->m_radius + a->m_position;
+			m->m_penetration = A->m_radius;
+			return;
+		}
+
+
+		// Compute barycentric coordinates
+		float u1 = Dot(circleCenter - v1, v2 - v1);
+		float u2 = Dot(circleCenter - v2, v1 - v2);
+
+		m->m_penetration = A->m_radius - seperation;
+
+
+
+		//Debug_Draw::GetInstance().DrawSegment(b->m_position, (circleCenter - v1) + b->m_position);
+		//Debug_Draw::GetInstance().DrawSegment(b->m_position, b->m_position + (v2 - v1));
+		// 
+		//Debug_Draw::GetInstance().DrawSegment(b->m_position, (circleCenter - v2) + b->m_position);
+		//Debug_Draw::GetInstance().DrawSegment(b->m_position, b->m_position + (v1 - v2));
+
+		if (u1 <= 0.0f)
+		{
+			Vector2 v1ToCenter = circleCenter - v1;
+			float distSq = v1ToCenter.LengthSquared();
+			
+			//checking the distance between collision face vertex and circle's center
+			if (distSq > A->m_radius * A->m_radius)
+				return;
+			m->m_contactCount = 1;
+			Vector2 n = v1 - circleCenter;
+			n = rotB * n;
+			m->m_normal = n.Normalize();
+			v1 = rotB * v1 + b->m_position;
+			m->m_contacts[0] = v1;
+		}
+		else if(u2 <= 0.0f)
+		{
+			Vector2 v2ToCenter = circleCenter - v2;
+			float distSq = v2ToCenter.LengthSquared();
+
+			//checking the distance between collision face vertex and circle's center
+			if (distSq > A->m_radius * A->m_radius)
+				return;
+			m->m_contactCount = 1;
+			Vector2 n = v2 - circleCenter;
+			n = rotB * n;
+			m->m_normal = n.Normalize();
+			v2 = rotB * v2 + b->m_position;
+			m->m_contacts[0] = v2;
+		}
+		else
+		{
+			Vector2 n = B->m_normals[faceNormal];
+			//To check the distance between circle's center and the collision face
+			if (Dot(circleCenter - v1, n) > A->m_radius)
+				return;
+			n = rotB * n;
+			m->m_normal = -n;
+			m->m_contacts[0] = m->m_normal * A->m_radius + a->m_position;
+			m->m_contactCount = 1;
+		}
+
+	}
+
+	void PolygonToCircle(Manifold* m, Body* a, Body* b)
+	{
+		CircleToPolygon(m, b, a);
+		m->m_normal = -m->m_normal;
 	}
 
 }

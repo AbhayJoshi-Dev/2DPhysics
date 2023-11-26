@@ -26,6 +26,14 @@ void Manifold::Solve()
 	//PolygontoPolygon
 	if (_A->m_shape->GetType() == POLYGON && _B->m_shape->GetType() == POLYGON)
 		Collision::PolygonToPolygon(this, _A, _B);
+
+	//CircleToPolygon
+	if (_A->m_shape->GetType() == CIRCLE && _B->m_shape->GetType() == POLYGON)
+		Collision::CircleToPolygon(this, _A, _B);
+
+	//PolygonToCircle
+	if (_A->m_shape->GetType() == POLYGON && _B->m_shape->GetType() == CIRCLE)
+		Collision::PolygonToCircle(this, _A, _B);
 }
 
 void Manifold::ResolveCollision()
@@ -105,7 +113,7 @@ void Manifold::ResolveCollision()
 
 		jt /= m_contactCount;
 
-		float mu = std::sqrt(0.2f * 0.2f + 0.2f * 0.2f);//static friction
+		float mu = std::sqrt(0.4f * 0.4f + 0.4f * 0.4f);//static friction
 
 		//Coulomb's Law
 		// Clamp magnitude of friction and create impulse vector
@@ -116,7 +124,7 @@ void Manifold::ResolveCollision()
 		}
 		else
 		{
-			float dynamic_friction = std::sqrt(0.1f * 0.1f + 0.1f * 0.1f);
+			float dynamic_friction = std::sqrt(0.3f * 0.3f + 0.3f * 0.3f);
 
 			friction_impulse = t * -j * dynamic_friction;
 		}
