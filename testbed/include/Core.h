@@ -5,6 +5,7 @@
 
 #include"Timer.h"
 #include"Scene.h"
+#include"Draw.h"
 
 class Core
 {
@@ -20,8 +21,8 @@ private:
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
 
-	const int SCREEN_WIDTH = 800;
-	const int SCREEN_HEIGHT = 600;
+	const int SCREEN_WIDTH = 1280;
+	const int SCREEN_HEIGHT = 720;
 
 	const int SCREEN_FPS = 60.f;
 	const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;

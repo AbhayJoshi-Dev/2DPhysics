@@ -1,5 +1,5 @@
 #include"Core.h"
-#include"Debug_Draw.h"
+#include"Draw.h"
 
 Core::Core():
 	m_quit(false),
@@ -10,7 +10,7 @@ Core::Core():
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
 
-	m_window = SDL_CreateWindow("Ball Simulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	m_window = SDL_CreateWindow("Ball Simulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
 	if (m_window == NULL)
 		std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
@@ -31,7 +31,6 @@ Core::Core():
 
 	Body* b1 = new Body(&poly, Vector2(50.f, 500.f), true);
 	m_scene->AddBody(b1);
-
 
 
 
@@ -113,57 +112,6 @@ void Core::Loop()
 	}
 }
 
-
-void Set_Pixel(SDL_Renderer* renderer, int x, int y, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-{
-	SDL_SetRenderDrawColor(renderer, r, g, b, a);
-	SDL_RenderDrawPoint(renderer, x, y);
-}
-
-void Draw_Circle(SDL_Renderer* renderer, int p_x, int p_y, int radius, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-{
-	double error = (double)-radius;
-	double x = (double)radius - 0.5;
-	double y = (double)0.5;
-	double cx = p_x - 0.5;
-	double cy = p_y - 0.5;
-
-	while (x >= y)
-	{
-		Set_Pixel(renderer, (int)(cx + x), (int)(cy + y), r, g, b, a);
-		Set_Pixel(renderer, (int)(cx + y), (int)(cy + x), r, g, b, a);
-
-		if (x != 0)
-		{
-			Set_Pixel(renderer, (int)(cx - x), (int)(cy + y), r, g, b, a);
-			Set_Pixel(renderer, (int)(cx + y), (int)(cy - x), r, g, b, a);
-		}
-
-		if (y != 0)
-		{
-			Set_Pixel(renderer, (int)(cx + x), (int)(cy - y), r, g, b, a);
-			Set_Pixel(renderer, (int)(cx - y), (int)(cy + x), r, g, b, a);
-		}
-
-		if (x != 0 && y != 0)
-		{
-			Set_Pixel(renderer, (int)(cx - x), (int)(cy - y), r, g, b, a);
-			Set_Pixel(renderer, (int)(cx - y), (int)(cy - x), r, g, b, a);
-		}
-
-		error += y;
-		++y;
-		error += y;
-
-		if (error >= 0)
-		{
-			--x;
-			error -= x;
-			error -= x;
-		}
-	}
-}
-
 void Core::Render()
 {
 	SDL_RenderClear(m_renderer);
@@ -173,30 +121,11 @@ void Core::Render()
 		if (body->m_shape->GetType() == CIRCLE)
 		{
 			Circle* circle = (Circle*)body->m_shape;
-			float rad = circle->m_radius;
-			Draw_Circle(m_renderer, body->m_position.x, body->m_position.y, rad, 255, 255, 255, 255);
+			float radius = circle->m_radius;
 
+			Mat22 rot(body->m_orientation);
 
-			//Vector2 r1(1.f, 0.f);
-			//float c = std::cos(body->m_orientation);
-			//float s = std::sin(body->m_orientation);
-
-			//Vector2 r;
-
-			//r.x = r1.x * c - r1.y * s;   //v1.x * v2.x - v1.y * v2.y
-			//r.y = r1.x * s + r1.y * c;   //v1.x * v2.y + v1.y * v2.x
-
-			//r = r * rad;
-
-			float x = rad * cos(body->m_orientation);
-			float y = rad * sin(body->m_orientation);
-
-
-			Vector2 r(x, y);
-			r = r + body->m_position;
-			Debug_Draw::GetInstance().DrawSegment(body->m_position, r);
-
-
+			draw.DrawCircle(body->m_position, radius, rot * Vector2(1.f, 0.f), Color(150, 255, 150, 255));
 		}
 		else if (body->m_shape->GetType() == AABB_)
 		{
@@ -214,25 +143,23 @@ void Core::Render()
 		{
 			Polygon* poly = (Polygon*)body->m_shape;
 			int count = poly->m_count;
-			Vector2* vertices = poly->m_vertices;
 				
-			Mat22 m(body->m_orientation);
+			Mat22 rot(body->m_orientation);
+
+			Vector2 vertices[MAX_POLYGON_VERTICES];
 
 			for (int i = 0; i < count; i++)
 			{
-				SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-				int i1 = i + 1 < count ? i + 1 : 0;
-
-
-				Vector2 v1 = body->m_position + m * vertices[i];
-				Vector2 v2 = body->m_position + m * vertices[i1];
-
-				SDL_RenderDrawLine(m_renderer, v2.x, v2.y, v1.x, v1.y);
+				vertices[i] = body->m_position + rot * poly->m_vertices[i];
 			}
+
+			draw.DrawPolygon(vertices, count, Color(150, 255, 150, 255));
+
 		}
 	}
 
-	Debug_Draw::GetInstance().Draw(m_renderer);
+	//Draw::GetInstance()._Draw(m_renderer);
+	draw._Draw(m_renderer);
 
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
 

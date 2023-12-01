@@ -33,7 +33,7 @@ void Scene::Update(const float dt)
 		m_bodies[i]->IntegrateForces(dt);
 
 	//Resolve Collisions
-	for(int j = 0; j < 10; j++)
+	for(int j = 0; j < 8; j++)
 		for (int i = 0; i < m_contacts.size(); i++)
 			m_contacts[i].ResolveCollision();
 
