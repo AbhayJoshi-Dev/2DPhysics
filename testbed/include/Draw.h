@@ -30,7 +30,6 @@ public:
 
 private:
 	RenderLines* m_lines;
-	std::vector<Vector2> m_points;
 };
 
 extern Draw draw;

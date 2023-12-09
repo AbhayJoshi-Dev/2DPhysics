@@ -1,9 +1,9 @@
-#include"Core.h"
+#include"Test.h"
 
 int main(int argc, char* argv[])
 {
-	Core core;
-	core.Loop();
+	Test test;
+	test.Step();
 
 	return 0;
 }

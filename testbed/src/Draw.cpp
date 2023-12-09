@@ -1,5 +1,6 @@
 #include"Draw.h"
 
+#include<iostream>
 
 
 //Draw& Draw::GetInstance()
@@ -8,6 +9,8 @@
 
 //	return nullptr;
 //}
+
+Draw draw;
 
 struct RenderLines
 {
@@ -24,20 +27,19 @@ struct RenderLines
 			i += 2;
 		}
 		m_count = 0;
+		m_vertices.clear();
+		m_colors.clear();
 	}
 
 	void Vertex(const Vector2& v, const Color& c)
 	{
-		if (m_count == 1024)
-			return;
-
-		m_vertices[m_count] = v;
-		m_colors[m_count] = c;
+		m_vertices.emplace_back(v);
+		m_colors.emplace_back(c);
 		m_count++;
 	}
 
-	Vector2 m_vertices[1024];
-	Color m_colors[1024];
+	std::vector<Vector2> m_vertices;
+	std::vector<Color> m_colors;
 	int m_count;
 };
 

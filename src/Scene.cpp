@@ -1,11 +1,12 @@
 #include"Scene.h"
 #include"Manifold.h"
+#include"DebugDraw.h"
 
 #include<iostream>
 
 Scene::Scene()
 {
-
+	m_draw = nullptr;
 }
 
 void Scene::Update(const float dt)
@@ -22,6 +23,7 @@ void Scene::Update(const float dt)
 			Body* B = m_bodies[j];
 
 			Manifold manifold(A, B);
+			manifold.SetDebugDraw(m_draw);
 			manifold.Solve();
 			if (manifold.m_contactCount)
 				m_contacts.emplace_back(manifold);
@@ -54,4 +56,42 @@ void Scene::AddBody(Body* body)
 std::vector<Body*>& Scene::GetBodies()
 {
 	return m_bodies;
+}
+
+void Scene::Draw()
+{
+	for (auto body : m_bodies)
+	{
+		if (body->m_shape->GetType() == CIRCLE)
+		{
+			Circle* circle = (Circle*)body->m_shape;
+			float radius = circle->m_radius;
+
+			Mat22 rot(body->m_orientation);
+
+			m_draw->DrawCircle(body->m_position, radius, rot * Vector2(1.f, 0.f), Color(150, 255, 150, 255));
+		}
+		else if (body->m_shape->GetType() == POLYGON)
+		{
+			Polygon* poly = (Polygon*)body->m_shape;
+			int count = poly->m_count;
+
+			Mat22 rot(body->m_orientation);
+
+			Vector2 vertices[MAX_POLYGON_VERTICES];
+
+			for (int i = 0; i < count; i++)
+			{
+				vertices[i] = body->m_position + rot * poly->m_vertices[i];
+			}
+
+			m_draw->DrawPolygon(vertices, count, Color(150, 255, 150, 255));
+
+		}
+	}
+}
+
+void Scene::SetDebugDraw(DebugDraw* draw)
+{
+	m_draw = draw;
 }

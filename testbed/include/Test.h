@@ -7,13 +7,13 @@
 #include"Scene.h"
 #include"Draw.h"
 
-class Core
+class Test
 {
 public:
-	Core();
-	~Core();
+	Test();
+	~Test();
 
-	void Loop();
+	void Step();
 	void Render();
 
 private:

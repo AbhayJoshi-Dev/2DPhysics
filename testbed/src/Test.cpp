@@ -1,7 +1,7 @@
-#include"Core.h"
-#include"Draw.h"
+#include"Test.h"
+//#include"draw.h"
 
-Core::Core():
+Test::Test():
 	m_quit(false),
 	m_window(NULL),
 	m_renderer(NULL),
@@ -32,12 +32,12 @@ Core::Core():
 	Body* b1 = new Body(&poly, Vector2(50.f, 500.f), true);
 	m_scene->AddBody(b1);
 
-
+	m_scene->SetDebugDraw(&draw);
 
 	srand(3);
 }
 
-Core::~Core()
+Test::~Test()
 {
 	SDL_DestroyRenderer(m_renderer);
 	SDL_DestroyWindow(m_window);
@@ -45,7 +45,7 @@ Core::~Core()
 	SDL_Quit();
 }
 
-void Core::Loop()
+void Test::Step()
 {
 	while (!m_quit)
 	{
@@ -112,53 +112,12 @@ void Core::Loop()
 	}
 }
 
-void Core::Render()
+void Test::Render()
 {
 	SDL_RenderClear(m_renderer);
 
-	for (auto body : m_scene->GetBodies())
-	{
-		if (body->m_shape->GetType() == CIRCLE)
-		{
-			Circle* circle = (Circle*)body->m_shape;
-			float radius = circle->m_radius;
-
-			Mat22 rot(body->m_orientation);
-
-			draw.DrawCircle(body->m_position, radius, rot * Vector2(1.f, 0.f), Color(150, 255, 150, 255));
-		}
-		else if (body->m_shape->GetType() == AABB_)
-		{
-			AABB* aabb = (AABB*)body->m_shape;
-
-			float w = aabb->m_width;
-			float h = aabb->m_height;
-
-			SDL_Rect rect = { body->m_position.x - w / 2, body->m_position.y - h / 2 , w, h};
-
-			SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-			SDL_RenderDrawRect(m_renderer, &rect);
-		}
-		else if (body->m_shape->GetType() == POLYGON)
-		{
-			Polygon* poly = (Polygon*)body->m_shape;
-			int count = poly->m_count;
-				
-			Mat22 rot(body->m_orientation);
-
-			Vector2 vertices[MAX_POLYGON_VERTICES];
-
-			for (int i = 0; i < count; i++)
-			{
-				vertices[i] = body->m_position + rot * poly->m_vertices[i];
-			}
-
-			draw.DrawPolygon(vertices, count, Color(150, 255, 150, 255));
-
-		}
-	}
-
 	//Draw::GetInstance()._Draw(m_renderer);
+	m_scene->Draw();
 	draw._Draw(m_renderer);
 
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);

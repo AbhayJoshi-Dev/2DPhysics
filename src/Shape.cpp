@@ -72,8 +72,6 @@ ShapeType Polygon::GetType() const
 
 void Polygon::ComputeMass(float density)
 {
-	std::cout << m_body->m_position.x << ", " << m_body->m_position.y << std::endl;
-
 	Vector2 c(0.0f, 0.0f);
 	float area = 0.0f;
 
