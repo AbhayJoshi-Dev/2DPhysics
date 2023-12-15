@@ -12,7 +12,7 @@ class Scene
 public:
 
 	Scene();
-	void Update(const float dt);
+	void Step(const float dt);
 	void AddBody(Body* body);
 	std::vector<Body*>& GetBodies();
 	void Draw();

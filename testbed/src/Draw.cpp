@@ -1,6 +1,6 @@
-#include"Draw.h"
+#include<imgui.h>
 
-#include<iostream>
+#include"Draw.h"
 
 
 //Draw& Draw::GetInstance()
@@ -9,8 +9,6 @@
 
 //	return nullptr;
 //}
-
-Draw draw;
 
 struct RenderLines
 {
@@ -50,19 +48,19 @@ Draw::Draw()
 
 void Draw::DrawCircle(const Vector2& center, float radius, const Vector2& axis, const Color& color)
 {
-	const float k_segments = 32.0f;
+	const float k_segments = 16.0f;
 	const float k_increment = 2.0f * 3.14159265359f / k_segments;
-	float sinInc = sinf(k_increment);
-	float cosInc = cosf(k_increment);
+
+	Mat22 r(k_increment);
 	Vector2 r1(1.0f, 0.0f);
 	Vector2 v1 = center + radius * r1;
+
 	for (int i = 0; i < k_segments; ++i)
 	{
-		// Perform rotation to avoid additional trigonometry.
-		Vector2 r2;
-		r2.x = cosInc * r1.x - sinInc * r1.y;
-		r2.y = sinInc * r1.x + cosInc * r1.y;
+		//roataing vector r1 with matrix r
+		Vector2 r2 = r * r1;
 		Vector2 v2 = center + radius * r2;
+
 		m_lines->Vertex(v1, color);
 		m_lines->Vertex(v2, color);
 
@@ -91,6 +89,14 @@ void Draw::DrawPolygon(const Vector2* vertices, int vertexCount, const Color& co
 		m_lines->Vertex(v2, color);
 		v1 = v2;
 	}
+}
+
+void Draw::DrawString(const Vector2& position, const char* string)
+{
+	ImGui::Begin("Background", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
+	ImGui::SetCursorPos(ImVec2(position.x, position.y));
+	ImGui::TextColored(ImColor(230, 153, 153, 255), string);
+	ImGui::End();
 }
 
 void Draw::_Draw(SDL_Renderer* renderer)

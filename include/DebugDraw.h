@@ -24,4 +24,6 @@ public:
 	virtual void DrawSegment(const Vector2& v1, const Vector2& v2, const Color& color) = 0;
 
 	virtual void DrawPolygon(const Vector2* vertices, int vertexCount, const Color& color) = 0;
+
+	virtual void DrawString(const Vector2& position, const char* string) = 0;
 };

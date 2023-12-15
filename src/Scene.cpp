@@ -9,7 +9,7 @@ Scene::Scene()
 	m_draw = nullptr;
 }
 
-void Scene::Update(const float dt)
+void Scene::Step(const float dt)
 {
 
 	m_contacts.clear();

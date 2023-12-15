@@ -25,6 +25,7 @@ include/Shape.h
 include/Timer.h
 include/Collision.h
 include/MathUtils.h
+include/DebugDraw.h
 )
 
 add_library(2DPhysics ${2DPHYSICS_SOURCE_FILES} ${2DPHYSICS_HEADER_FILES})
@@ -34,25 +35,46 @@ target_include_directories(
 )
 
 
+set(IMGUI_SOURCE_FILES
+  external/imgui/imgui.cpp
+  external/imgui/imgui_demo.cpp
+  external/imgui/imgui_draw.cpp
+  external/imgui/imgui_tables.cpp
+  external/imgui/imgui_widgets.cpp
+  )
 
+set(IMGUI_HEADER_FILES
+  external/imgui/imconfig.h
+  external/imgui/imgui.h
+  external/imgui/imgui_internal.h
+  external/imgui/imstb_rectpack.h
+  external/imgui/imstb_textedit.h
+  external/imgui/imstb_truetype.h
+)
 
+add_library(imgui STATIC ${IMGUI_SOURCE_FILES} ${IMGUI_HEADER_FILES})
+target_include_directories(imgui PUBLIC external/imgui/)
 
 
 set(TESTBED_SOURCE_FILES 
-testbed/include/Core.h
-testbed/src/Core.cpp
-testbed/include/Debug_Draw.h
-testbed/src/Debug_Draw.cpp
+testbed/include/Test.h
+testbed/src/Test.cpp
+testbed/include/Draw.h
+testbed/src/Draw.cpp
 testbed/src/main.cpp
+testbed/include/imgui_impl_sdl2.h
+testbed/src/imgui_impl_sdl2.cpp
+testbed/include/imgui_impl_sdlrenderer2.h
+testbed/src/imgui_impl_sdlrenderer2.cpp
 )
   
 add_executable(testbed ${TESTBED_SOURCE_FILES})
 
 target_include_directories(testbed PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/testbed/include/
-                                            ${CMAKE_CURRENT_SOURCE_DIR}/external/SDL/include/
-                                            ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/
+            ${CMAKE_CURRENT_SOURCE_DIR}/external/SDL/include/)
 
-target_link_libraries(testbed PUBLIC  SDL2 SDL2main 2DPhysics)
+target_link_libraries(testbed PUBLIC  SDL2 SDL2main 2DPhysics imgui)
 
 if (MSVC)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT testbed)

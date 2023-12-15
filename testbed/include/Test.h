@@ -15,6 +15,7 @@ public:
 
 	void Step();
 	void Render();
+	void UpdateUI(float timeStep);
 
 private:
 
@@ -24,17 +25,17 @@ private:
 	const int SCREEN_WIDTH = 1280;
 	const int SCREEN_HEIGHT = 720;
 
-	const int SCREEN_FPS = 60.f;
-	const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
+	const int SCREEN_FPS = 60;
+	const float SCREEN_TICKS_PER_FRAME = 1000.f / (float)SCREEN_FPS;
 
 	bool m_quit;
 
 	SDL_Event m_event;
 
-	Timer m_fps_timer;
 	Timer m_cap_timer;
 
-	int m_counted_frames;
-
 	Scene *m_scene;
+
+	Draw m_draw;
+	float m_currentTime;
 };
