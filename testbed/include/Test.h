@@ -38,4 +38,7 @@ private:
 
 	Draw m_draw;
 	float m_currentTime;
+	const char* itemCurrent;
+	bool m_canSpawn = true;
+	const char* shapes[2];
 };

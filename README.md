@@ -1,6 +1,6 @@
 # 2d Physics
 
-A small 2D Physics engine developed for learning more about collision detection and collision response. It's written in C++ using [SDL2](https://www.libsdl.org/) and [imgui](https://github.com/ocornut/imgui).
+A small 2D Physics engine developed for learning more about collision detection and collision response. It's written in C++ using [SDL2](https://www.libsdl.org/).
 
 ## Build Instructions
 
@@ -36,3 +36,10 @@ A small 2D Physics engine developed for learning more about collision detection 
   - on `Windows` with `Visual Studio` installed, it will generate a `.sln`
   - on `Linux` with `make` installed, it will generate a `Makefile`
   - on `Mac` with `xcode` installed, it will generate a `.xcodeproj`
+
+## References
+
+1. https://github.com/erincatto/box2d
+2. https://github.com/RandyGaul/ImpulseEngine
+3. https://code.tutsplus.com/series/how-to-create-a-custom-physics-engine--gamedev-12715
+4. http://www.chrishecker.com/Rigid_Body_Dynamics

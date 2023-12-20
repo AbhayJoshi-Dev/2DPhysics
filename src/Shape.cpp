@@ -98,7 +98,7 @@ void Polygon::ComputeMass(float density)
 		area += triangleArea;
 
 		// Area weighted centroid
-		c += triangleArea * inv3 * (p1 + p2 + p3);		
+		c += triangleArea * inv3 * (p1 + p2 + p3);
 
 		float intx2 = e1.x * e1.x + e1.x * e2.x + e2.x * e2.x;
 		float inty2 = e1.y * e1.y + e1.y * e2.y + e2.y * e2.y;

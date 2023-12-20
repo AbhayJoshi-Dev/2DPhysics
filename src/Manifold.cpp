@@ -43,6 +43,7 @@ void Manifold::Solve()
 
 void Manifold::ResolveCollision()
 {
+
 	for (int i = 0; i < m_contactCount; i++)
 	{
 		// vector from body's center of mass to collision contact point

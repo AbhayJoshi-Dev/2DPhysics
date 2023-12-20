@@ -2,6 +2,7 @@
 
 #include<math.h>
 #include<stdlib.h>
+#include<iostream>
 
 struct Vector2
 {
@@ -32,8 +33,6 @@ struct Vector2
 
 		return *this;
 	}
-
-
 
 	float x, y;
 };
@@ -99,6 +98,11 @@ inline Vector2 operator * (float s, const Vector2& a)
 inline Vector2 operator * (const Mat22& A, const Vector2& v)
 {
 	return Vector2(A.col1.x * v.x + A.col2.x * v.y, A.col1.y * v.x + A.col2.y * v.y);
+}
+
+inline std::ostream& operator << (std::ostream& ostr, const Vector2& v)
+{
+	return ostr << v.x << ", " << v.y;
 }
 
 inline int Random(int lo, int hi)
