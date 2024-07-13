@@ -3,30 +3,62 @@
 #include"DebugDraw.h"
 
 #include<iostream>
+#include<algorithm>
 
 Scene::Scene()
 {
 	m_draw = nullptr;
+	m_bruteForce = false;
+}
+
+Scene::~Scene()
+{
+	for (Body* body : m_bodies)
+		delete body;
+
+	m_bodies.clear();
 }
 
 void Scene::Step(const float dt)
 {
 
-	m_contacts.clear();
 
-	for (int i = 0; i < m_bodies.size(); i++)
+
+	if (!m_bruteForce)
 	{
-		Body *A = m_bodies[i];
+		bp.GeneratePairs(this);
+	
+		//remove if aabb is not overlapping
+		std::vector<Manifold>::iterator it = std::remove_if(m_contacts.begin(), m_contacts.end(),
+			[&](Manifold& m)
+			{
+				return !(bp.TestOverlap(m.m_a->m_proxy.m_proxyId, m.m_b->m_proxy.m_proxyId));
+			});
+		if(it != m_contacts.end())
+			m_contacts.erase(it, m_contacts.end());
 
-		for (int j = i + 1; j < m_bodies.size(); j++)
-		{
-			Body* B = m_bodies[j];
-
-			Manifold manifold(A, B);
-			manifold.SetDebugDraw(m_draw);
+		for (Manifold& manifold : m_contacts)
 			manifold.Solve();
-			if (manifold.m_contactCount)
-				m_contacts.emplace_back(manifold);
+	}
+	else
+	{
+		for (int i = 0; i < m_bodies.size(); i++)
+		{
+			Body* A = m_bodies[i];
+
+			for (int j = i + 1; j < m_bodies.size(); j++)
+			{
+				Body* B = m_bodies[j];
+
+				if (A == B)
+					continue;
+
+				Manifold manifold(A, B);
+				manifold.SetDebugDraw(m_draw);
+				manifold.Solve();
+				if (manifold.m_contactCount)
+					m_contacts.emplace_back(manifold);
+			}
 		}
 	}
 
@@ -37,15 +69,27 @@ void Scene::Step(const float dt)
 	//Resolve Collisions
 	for(int j = 0; j < 8; j++)
 		for (int i = 0; i < m_contacts.size(); i++)
-			m_contacts[i].ResolveCollision();
+		{
+			if(m_contacts[i].m_contactCount)
+				m_contacts[i].ResolveCollision();
+		}
 
 	//Integrate Velocities
 	for (int i = 0; i < m_bodies.size(); i++)
+	{
 		m_bodies[i]->IntegrateVelocities(dt);
+		m_bodies[i]->SyncAABB();
+	}
 
 	// Avoid object sinking by correcting positions
 	for (int i = 0; i < m_contacts.size(); i++)
-		m_contacts[i].PositionalCorrection();
+	{
+		if (m_contacts[i].m_contactCount)
+			m_contacts[i].PositionalCorrection();
+	}
+
+	if (m_bruteForce)
+		m_contacts.clear();
 }
 
 void Scene::AddBody(Body* body)
@@ -94,4 +138,37 @@ void Scene::Draw()
 void Scene::SetDebugDraw(DebugDraw* draw)
 {
 	m_draw = draw;
+}
+
+void Scene::AddPair(void* userData1, void* userData2)
+{
+	Body* bodyA = (Body*)userData1;
+	Body* bodyB = (Body*)userData2;
+
+	if (bodyA == bodyB)
+		return;
+
+	Manifold manifold(bodyA, bodyB);
+
+	//check if contacts already contains the manifold
+	std::vector<Manifold>::iterator it = std::find_if(m_contacts.begin(), m_contacts.end(),
+		[&manifold](Manifold& m)
+		{
+			if (manifold.m_a == m.m_a && manifold.m_b == m.m_b) return true;
+
+			return false;
+		});
+
+	if (it != m_contacts.end())
+		return;
+
+	manifold.SetDebugDraw(m_draw);
+//	manifold.Solve();
+//	if (manifold.m_contactCount)
+		m_contacts.push_back(manifold);
+}
+
+int Scene::GetTotalContacts() const
+{
+	return m_contacts.size();
 }

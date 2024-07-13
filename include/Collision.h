@@ -6,7 +6,7 @@
 
 namespace Collision
 {
-	void CircleToCircle(Manifold* m, Body* a, Body* b)
+	static void CircleToCircle(Manifold* m, Body* a, Body* b)
 	{
 		Circle* A = (Circle*)a->m_shape;
 		Circle* B = (Circle*)b->m_shape;
@@ -34,18 +34,21 @@ namespace Collision
 		}
 	}
 
-	void AABBToAABB(Manifold* m, Body* a, Body* b)
+	static void AABBToAABB(Manifold* m, Body* a, Body* b)
 	{
-		AABB* A = (AABB*)a->m_shape;
-		AABB* B = (AABB*)b->m_shape;
+		AABB A;
+		AABB B;
+
+		a->m_shape->ComputeAABB(&A, a->m_position, Mat22(a->m_orientation));
+		b->m_shape->ComputeAABB(&B, b->m_position, Mat22(b->m_orientation));
 
 		Vector2 vec_a_b = b->m_position - a->m_position;
 
-		float half_width_sum = (A->m_width + B->m_width) / 2;
+		float half_width_sum = ((A.upperBound.x - A.lowerBound.x) + (B.upperBound.x - B.lowerBound.x)) / 2;
 
 		if (half_width_sum > std::abs(vec_a_b.x))
 		{
-			float half_height_sum = (A->m_height + B->m_height) / 2;
+			float half_height_sum = ((A.upperBound.y - A.lowerBound.y) + (B.upperBound.y - B.lowerBound.y)) / 2;
 
 			if (half_height_sum > std::abs(vec_a_b.y))
 			{
@@ -80,37 +83,52 @@ namespace Collision
 		}
 	}
 
-
-	void AABBToCircle(Manifold* m, Body* a, Body* b)
+	static bool AABBToAABB(const AABB& a, const AABB& b)
 	{
-		AABB* A = (AABB*)a->m_shape;
-		Circle* B = (Circle*)b->m_shape;
+		Vector2 d1, d2;
 
-		Vector2 AABB_size(A->m_width / 2, A->m_height / 2);
+		d1 = b.lowerBound - a.upperBound;
+		d2 = a.lowerBound - b.upperBound;
 
-		Vector2 delta_a_b = b->m_position - a->m_position;
+		if (d1.x > 0.0f || d1.y > 0.0f)
+			return false;
 
-		Vector2 closest_point(SDL_clamp(delta_a_b.x, -AABB_size.x, AABB_size.x),
-			SDL_clamp(delta_a_b.y, -AABB_size.y, AABB_size.y));
+		if (d2.x > 0.0f || d2.y > 0.0f)
+			return false;
 
-		// Vector from closest point to delta_a_b vector
-		Vector2 n = delta_a_b - closest_point;
-
-		float dist_sq = n.LengthSquared();
-		float radius = B->m_radius;
-
-		m->m_contactCount = 0;
-
-		if (dist_sq > radius * radius)
-			return;
-
-		float dist = std::sqrt(dist_sq);
-		m->m_normal = n.Normalize();
-		m->m_penetration = radius - dist;
-
-		m->m_contactCount = 1;
-		m->m_contacts[0] = -m->m_normal * radius + b->m_position;
+		return true;
 	}
+
+	//void AABBToCircle(Manifold* m, Body* a, Body* b)
+	//{
+	//	AABB* A = (AABB*)a->m_shape;
+	//	Circle* B = (Circle*)b->m_shape;
+
+	//	Vector2 AABB_size(A->m_width / 2, A->m_height / 2);
+
+	//	Vector2 delta_a_b = b->m_position - a->m_position;
+
+	//	Vector2 closest_point(SDL_clamp(delta_a_b.x, -AABB_size.x, AABB_size.x),
+	//		SDL_clamp(delta_a_b.y, -AABB_size.y, AABB_size.y));
+
+	//	// Vector from closest point to delta_a_b vector
+	//	Vector2 n = delta_a_b - closest_point;
+
+	//	float dist_sq = n.LengthSquared();
+	//	float radius = B->m_radius;
+
+	//	m->m_contactCount = 0;
+
+	//	if (dist_sq > radius * radius)
+	//		return;
+
+	//	float dist = std::sqrt(dist_sq);
+	//	m->m_normal = n.Normalize();
+	//	m->m_penetration = radius - dist;
+
+	//	m->m_contactCount = 1;
+	//	m->m_contacts[0] = -m->m_normal * radius + b->m_position;
+	//}
 
 	/*void Collision::AABBToCircle(Manifold* m, Body* a, Body* b)
 	{
@@ -182,13 +200,13 @@ namespace Collision
 	}*/
 
 
-	void CircleToAABB(Manifold* m, Body* a, Body* b)
+	/*void CircleToAABB(Manifold* m, Body* a, Body* b)
 	{
 		AABBToCircle(m, b, a);
 		m->m_normal = m->m_normal * -1;
-	}
+	}*/
 
-	void FindIncidentFace(Vector2* v, Polygon* referencePoly, Polygon* incidentPoly, int referenceIndex)
+	static void FindIncidentFace(Vector2* v, Polygon* referencePoly, Polygon* incidentPoly, int referenceIndex)
 	{
 		Vector2 referenceNormal = referencePoly->m_normals[referenceIndex];
 
@@ -219,7 +237,7 @@ namespace Collision
 		v[1] = rot_inc * incidentPoly->m_vertices[incidentFaceIndex] + incidentPoly->m_body->m_position;
 	}
 	
-	float FindLeastPenetration(int *face, Polygon* A, Polygon* B)
+	static float FindLeastPenetration(int *face, Polygon* A, Polygon* B)
 	{
 		float best_distance = -FLT_MAX;
 		int best_index = 0;;
@@ -266,7 +284,7 @@ namespace Collision
 		return best_distance;
 	}
 
-	int Clip(Vector2 normal, float c, Vector2* face)
+	static int Clip(Vector2 normal, float c, Vector2* face)
 	{
 
 		int count = 0;
@@ -297,7 +315,7 @@ namespace Collision
 		return count;
 	}
 
-	void PolygonToPolygon(Manifold* m, Body* a, Body* b)
+	static void PolygonToPolygon(Manifold* m, Body* a, Body* b)
 	{
 		Polygon* A = (Polygon*)a->m_shape;
 		Polygon* B = (Polygon*)b->m_shape;
@@ -424,7 +442,7 @@ namespace Collision
 	}
 
 
-	void CircleToPolygon(Manifold* m, Body* a, Body* b)
+	static void CircleToPolygon(Manifold* m, Body* a, Body* b)
 	{
 		Circle* A = (Circle*)a->m_shape;
 		Polygon* B = (Polygon*)b->m_shape;
@@ -531,7 +549,7 @@ namespace Collision
 
 	}
 
-	void PolygonToCircle(Manifold* m, Body* a, Body* b)
+	static void PolygonToCircle(Manifold* m, Body* a, Body* b)
 	{
 		CircleToPolygon(m, b, a);
 		m->m_normal = -m->m_normal;

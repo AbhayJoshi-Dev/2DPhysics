@@ -1,7 +1,7 @@
 #include<imgui.h>
 
 #include"Draw.h"
-
+#include"Shape.h"
 
 //Draw& Draw::GetInstance()
 //{
@@ -91,15 +91,28 @@ void Draw::DrawPolygon(const Vector2* vertices, int vertexCount, const Color& co
 	}
 }
 
-void Draw::DrawString(const Vector2& position, const char* string)
+void Draw::DrawAABB(const AABB* aabb, const Color& color)
 {
-	ImGui::Begin("Background", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar);
-	ImGui::SetCursorPos(ImVec2(position.x, position.y));
-	ImGui::TextColored(ImColor(230, 153, 153, 255), string);
-	ImGui::End();
+	Vector2 p1 = aabb->lowerBound;
+	Vector2 p2 = Vector2(aabb->upperBound.x, aabb->lowerBound.y);
+	Vector2 p3 = aabb->upperBound;
+	Vector2 p4 = Vector2(aabb->lowerBound.x, aabb->upperBound.y);
+
+	m_lines->Vertex(p1, color);
+	m_lines->Vertex(p2, color);
+
+	m_lines->Vertex(p2, color);
+	m_lines->Vertex(p3, color);
+
+	m_lines->Vertex(p3, color);
+	m_lines->Vertex(p4, color);
+
+	m_lines->Vertex(p4, color);
+	m_lines->Vertex(p1, color);
 }
 
 void Draw::_Draw(SDL_Renderer* renderer)
 {
 	m_lines->Draw(renderer);
+	//m_lines
 }

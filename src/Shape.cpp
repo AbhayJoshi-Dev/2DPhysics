@@ -27,28 +27,12 @@ void Circle::ComputeMass(float density)
 	m_body->m_mass_data.inverse_inertia = (m_body->m_mass_data.inertia) ? 1.f / m_body->m_mass_data.inertia : 0.f;
 }
 
-AABB::AABB(float width, float height):
-	m_width(width),
-	m_height(height)
-{}
-
-Shape* AABB::Clone() const
+void Circle::ComputeAABB(AABB* aabb, Vector2 position, Mat22 orientation) const
 {
-	return new AABB(m_width, m_height);
-}
-
-ShapeType AABB::GetType() const
-{
-	return AABB_;
-}
-
-void AABB::ComputeMass(float density)
-{
-	m_body->m_mass_data.mass = (m_width * m_height) * density;
-	m_body->m_mass_data.inverse_mass = (m_body->m_mass_data.mass) ? 1.f / m_body->m_mass_data.mass : 0.f;
-
-	m_body->m_mass_data.inertia = m_body->m_mass_data.mass * (m_width * m_width + m_height * m_height) / 12;
-	m_body->m_mass_data.inverse_inertia = (m_body->m_mass_data.inertia) ? 1.f / m_body->m_mass_data.inertia : 0.f;
+	Vector2 center(0.f, 0.f);
+	Vector2 pos = position + orientation * center;
+	aabb->lowerBound = Vector2(pos.x - m_radius, pos.y - m_radius);
+	aabb->upperBound = Vector2(pos.x + m_radius, pos.y + m_radius);
 }
 
 Shape* Polygon::Clone() const
@@ -234,4 +218,20 @@ Vector2 Polygon::GetSupport(const Vector2& direction) const
 	}
 
 	return best_vertex;
+}
+
+void Polygon::ComputeAABB(AABB* aabb, Vector2 position, Mat22 orientation) const
+{
+	Vector2 lower = position + orientation * m_vertices[0];
+	Vector2 upper = lower;
+
+	for (int i = 1; i < m_count; ++i)
+	{
+		Vector2 v = position + orientation * m_vertices[i];
+		lower = Vector2(std::min(lower.x, v.x), std::min(lower.y, v.y));
+		upper = Vector2(std::max(upper.x, v.x), std::max(upper.y, v.y));
+	}
+
+	aabb->lowerBound = lower;
+	aabb->upperBound = upper;
 }

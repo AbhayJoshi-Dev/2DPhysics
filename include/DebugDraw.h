@@ -1,5 +1,7 @@
 #pragma once
 
+#include"Shape.h"
+
 struct Color
 {
 	Color() {}
@@ -25,5 +27,5 @@ public:
 
 	virtual void DrawPolygon(const Vector2* vertices, int vertexCount, const Color& color) = 0;
 
-	virtual void DrawString(const Vector2& position, const char* string) = 0;
+	virtual void DrawAABB(const AABB* aabb, const Color& color) = 0;
 };

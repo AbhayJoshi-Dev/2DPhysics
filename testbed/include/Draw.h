@@ -26,7 +26,7 @@ public:
 	void DrawCircle(const Vector2& center, float radius, const Vector2& axis, const Color& color) override;
 	void DrawSegment(const Vector2& v1, const Vector2& v2, const Color& color) override;
 	void DrawPolygon(const Vector2* vertices, int vertexCount, const Color& color) override;
-	void DrawString(const Vector2& position, const char* string) override;
+	void DrawAABB(const AABB* aabb, const Color& color) override;
 	void _Draw(SDL_Renderer *renderer);
 
 private:

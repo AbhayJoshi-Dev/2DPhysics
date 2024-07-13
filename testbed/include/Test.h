@@ -4,8 +4,9 @@
 #include<SDL.h>
 
 #include"Timer.h"
-#include"Scene.h"
 #include"Draw.h"
+
+class Scene;
 
 class Test
 {
@@ -38,7 +39,12 @@ private:
 
 	Draw m_draw;
 	float m_currentTime;
-	const char* itemCurrent;
+	const char* m_currentShape;
 	bool m_canSpawn = true;
-	const char* shapes[2];
+	const char* m_shapes[2];
+	bool m_drawAABB;
+	bool m_drawTree;
+
+	const char* m_currentApproach;
+	const char* m_approachs[2];
 };

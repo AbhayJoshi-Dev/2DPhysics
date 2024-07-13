@@ -11,6 +11,7 @@ Manifold::Manifold(Body* A, Body* B):
 	m_b(B)
 {
 	m_contactCount = 0;
+	m_penetration = 0;
 }
 
 void Manifold::Solve()
@@ -21,12 +22,12 @@ void Manifold::Solve()
 		Collision::AABBToAABB(this, m_a, m_b);
 
 	//AABBtoCircle
-	if (m_a->m_shape->GetType() == AABB_ && m_b->m_shape->GetType() == CIRCLE)
-		Collision::AABBToCircle(this, m_a, m_b);
+	//if (m_a->m_shape->GetType() == AABB_ && m_b->m_shape->GetType() == CIRCLE)
+	//	Collision::AABBToCircle(this, m_a, m_b);
 
 	//CircletoAABB
-	if (m_a->m_shape->GetType() == CIRCLE && m_b->m_shape->GetType() == AABB_)
-		Collision::CircleToAABB(this, m_a, m_b);
+	//if (m_a->m_shape->GetType() == CIRCLE && m_b->m_shape->GetType() == AABB_)
+	//	Collision::CircleToAABB(this, m_a, m_b);
 
 	//PolygontoPolygon
 	if (m_a->m_shape->GetType() == POLYGON && m_b->m_shape->GetType() == POLYGON)
