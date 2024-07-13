@@ -43,3 +43,4 @@ A small 2D Physics engine developed for learning more about collision detection 
 2. https://github.com/RandyGaul/ImpulseEngine
 3. https://code.tutsplus.com/series/how-to-create-a-custom-physics-engine--gamedev-12715
 4. http://www.chrishecker.com/Rigid_Body_Dynamics
+5. https://box2d.org/files/ErinCatto_DynamicBVH_Full.pdf
