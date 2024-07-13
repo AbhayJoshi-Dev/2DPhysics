@@ -43,6 +43,7 @@ include/BroadPhase.h
 )
 
 add_library(2DPhysics STATIC ${2DPHYSICS_SOURCE_FILES} ${2DPHYSICS_HEADER_FILES})
+
 target_include_directories(
                          2DPhysics PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/
                         ${CMAKE_CURRENT_SOURCE_DIR}/external/SDL/include/
@@ -72,6 +73,8 @@ set(IMGUI_HEADER_FILES
 )
 
 add_library(imgui STATIC ${IMGUI_SOURCE_FILES} ${IMGUI_HEADER_FILES})
+
+
 target_include_directories(imgui PUBLIC external/imgui/)
 
 
@@ -95,7 +98,22 @@ target_include_directories(testbed PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/testbed/i
             ${CMAKE_CURRENT_SOURCE_DIR}/include/
             ${CMAKE_CURRENT_SOURCE_DIR}/external/SDL/include/)
 
-target_link_libraries(testbed PUBLIC  SDL2 SDL2main 2DPhysics imgui)
+if(BUILD_SHARED_LIBS)
+  target_link_libraries(testbed PUBLIC
+    SDL2
+    SDL2main
+    2DPhysics
+    imgui
+  )
+else()
+  target_link_libraries(testbed PUBLIC
+    SDL2-static
+    SDL2main
+    2DPhysics
+    imgui
+  )
+endif()
+
 
 if (MSVC)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT testbed)
